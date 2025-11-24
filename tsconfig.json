@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "declaration": false,
+    "allowSyntheticDefaultImports": true,
+    "useDefineForClassFields": false,
+    // "isolatedModules": true,
+    "lib": ["ESNext"],
+    "module": "esnext",
+    "moduleResolution": "Bundler",
+    "sourceMap": true,
+    "target": "es2017", // es5
+    "jsx": "preserve", // react
+    "resolveJsonModule": true,
+
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./app/javascript/*"],
+      // "@toolkit/*": ["./node_modules/@inst_proserv/toolkit/esm/*"],
+    },
+  },
+  "exclude": [
+    "**/*.spec.ts",
+    ".git",
+    "node_modules",
+    "vendor",
+    "public"
+  ],
+  "compileOnSave": false
+}
