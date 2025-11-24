@@ -78,6 +78,10 @@ GEM
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
     ast (2.4.3)
+    babel-source (5.8.35)
+    babel-transpiler (0.7.0)
+      babel-source (>= 4.0, < 6)
+      execjs (~> 2.0)
     base64 (0.3.0)
     bcrypt_pbkdf (1.1.1)
     bigdecimal (3.3.1)
@@ -113,6 +117,7 @@ GEM
     erubi (1.13.1)
     et-orbi (1.4.0)
       tzinfo
+    execjs (2.10.0)
     ffi (1.17.2-aarch64-linux-gnu)
     ffi (1.17.2-aarch64-linux-musl)
     ffi (1.17.2-arm-linux-gnu)
@@ -197,6 +202,9 @@ GEM
       racc (~> 1.4)
     ostruct (0.6.3)
     package_json (0.2.0)
+    paper_trail (17.0.0)
+      activerecord (>= 7.1)
+      request_store (~> 1.4)
     parallel (1.27.0)
     parser (3.3.10.0)
       ast (~> 2.4.1)
@@ -205,10 +213,6 @@ GEM
       prettyprint
     prettyprint (0.2.0)
     prism (1.6.0)
-    propshaft (1.3.1)
-      actionpack (>= 7.0.0)
-      activesupport (>= 7.0.0)
-      rack
     psych (5.2.6)
       date
       stringio
@@ -263,9 +267,17 @@ GEM
       erb
       psych (>= 4.0.0)
       tsort
+    react-rails (3.2.1)
+      babel-transpiler (>= 0.7.0)
+      connection_pool
+      execjs
+      railties (>= 3.2)
+      tilt
     regexp_parser (2.11.3)
     reline (0.6.3)
       io-console (~> 0.5)
+    request_store (1.7.0)
+      rack (>= 1.4)
     rexml (3.4.4)
     rubocop (1.81.7)
       json (~> 2.3)
@@ -344,18 +356,11 @@ GEM
       net-ssh (>= 2.8.0)
       ostruct
     stringio (3.1.8)
-    tailwindcss-rails (4.4.0)
-      railties (>= 7.0.0)
-      tailwindcss-ruby (~> 4.0)
-    tailwindcss-ruby (4.1.16)
-    tailwindcss-ruby (4.1.16-aarch64-linux-gnu)
-    tailwindcss-ruby (4.1.16-aarch64-linux-musl)
-    tailwindcss-ruby (4.1.16-x86_64-linux-gnu)
-    tailwindcss-ruby (4.1.16-x86_64-linux-musl)
     thor (1.4.0)
     thruster (0.1.16)
     thruster (0.1.16-aarch64-linux)
     thruster (0.1.16-x86_64-linux)
+    tilt (2.6.1)
     timeout (0.4.4)
     tsort (0.2.0)
     tzinfo (2.0.6)
@@ -398,9 +403,10 @@ DEPENDENCIES
   image_processing (~> 1.2)
   jbuilder
   kamal
-  propshaft
+  paper_trail (~> 17.0)
   puma (>= 5.0)
   rails (~> 8.1.1)
+  react-rails (~> 3.2)
   rubocop-rails-omakase
   selenium-webdriver
   shakapacker (~> 9.4)
@@ -408,7 +414,6 @@ DEPENDENCIES
   solid_cache
   solid_queue
   sqlite3 (>= 2.1)
-  tailwindcss-rails
   thruster
   tzinfo-data
   web-console

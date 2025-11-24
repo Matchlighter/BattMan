@@ -29,8 +29,8 @@ module.exports = merge(webpackConfig, {
         alias: {
             '@': JSROOT,
             // '@toolkit': "@inst_proserv/toolkit",
-            "../../theme.config$": path.join(JSROOT, "/semantic-ui/theme.config"),
-            "../semantic-ui/site": path.join(JSROOT, "/semantic-ui/site"),
+            // "../../theme.config$": path.join(JSROOT, "/semantic-ui/theme.config"),
+            // "../semantic-ui/site": path.join(JSROOT, "/semantic-ui/site"),
         },
     }
 })
