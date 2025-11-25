@@ -22,6 +22,8 @@ module Battman
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.1
 
+    config.active_record.yaml_column_permitted_classes = [Symbol, Date, Time, ActiveSupport::TimeWithZone, ActiveSupport::TimeZone]
+
     config.mqtt = config_for(:mqtt)
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do

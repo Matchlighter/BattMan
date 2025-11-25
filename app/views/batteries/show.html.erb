@@ -67,18 +67,19 @@
                 <%= local_time(version.created_at) %>
               </td>
               <td>
-                <% if version.item.current_device.present? %>
-                  <a href="<%= device_path(version.item.current_device) %>">
+                <% snapshot = version.reify %>
+                <% if snapshot&.current_device.present? %>
+                  <a href="<%= device_path(snapshot.current_device) %>">
                     <div style="display: flex;">
                       <div>
                         <i class="mobile alternate icon"></i>
                       </div>
                       <div>
                         <strong>
-                          <%= version.item.current_device.human_name || version.item.current_device.id %>
+                          <%= snapshot.current_device.human_name || snapshot.current_device.id %>
                         </strong><br>
                         <small class="text-muted" style="margin-left: 6px;">
-                          <%= version.item.current_device.id %>
+                          <%= snapshot.current_device.id %>
                         </small>
                       </div>
                     </div>
