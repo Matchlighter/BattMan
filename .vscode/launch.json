@@ -1,0 +1,71 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Rails Server",
+      "type": "rdbg",
+      "request": "launch",
+      "script": "bin/rails",
+      "args": ["server"],
+      "askParameters": false,
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "RUBY_DEBUG_OPEN": "true",
+        "RUBY_DEBUG_LAZY": "true"
+      }
+    },
+    {
+      "name": "Rails Console",
+      "type": "rdbg",
+      "request": "launch",
+      "script": "bin/rails",
+      "args": ["console"],
+      "askParameters": false,
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Run Current Test File",
+      "type": "rdbg",
+      "request": "launch",
+      "script": "bin/rails",
+      "args": ["test", "${relativeFile}"],
+      "askParameters": false,
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Run All Tests",
+      "type": "rdbg",
+      "request": "launch",
+      "script": "bin/rails",
+      "args": ["test"],
+      "askParameters": false,
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Attach to Rails Server",
+      "type": "rdbg",
+      "request": "attach",
+      "rdbgPath": "rdbg",
+      "debugPort": "12345"
+    },
+    {
+      "name": "Shakapacker Dev Server",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "bin/shakapacker-dev-server",
+      "cwd": "${workspaceFolder}"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Rails + Shakapacker",
+      "configurations": ["Rails Server", "Shakapacker Dev Server"],
+      "stopAll": true,
+      "presentation": {
+        "hidden": false,
+        "group": "development",
+        "order": 1
+      }
+    }
+  ]
+}

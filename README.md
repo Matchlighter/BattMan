@@ -19,6 +19,10 @@ When a battery is scanned within 5 minutes of scanning a device, that battery is
 
 If you want to use this in it's present state, you'll need to be able to intepret Ruby and do some modifications. I may make it more generic at some point, but for now it solves my "need".
 
+## Resources
+- https://wifi.scandocs.net/DS2800/en/
+- https://github.com/MultiMote/niimblue
+
 ## TODO (Feel free to PR ;) )
 - Move `Device` and `Battery` `PATTERN` definitions to a YML file
 - Support configuration of ID parsing

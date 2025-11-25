@@ -1,0 +1,129 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start Rails Server",
+      "type": "shell",
+      "command": "bin/rails server",
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^([^:]+):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*Booting Puma.*$",
+          "endsPattern": "^.*Use Ctrl-C to stop.*$"
+        }
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "Start Shakapacker Dev Server",
+      "type": "shell",
+      "command": "bin/shakapacker-dev-server",
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^ERROR in (.+)$",
+          "file": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*webpack.*compiling.*$",
+          "endsPattern": "^.*webpack.*compiled.*$"
+        }
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "Start Foreman Dev",
+      "type": "shell",
+      "command": "bin/dev",
+      "isBackground": true,
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Rails DB Migrate",
+      "type": "shell",
+      "command": "bin/rails db:migrate",
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Rails DB Reset",
+      "type": "shell",
+      "command": "bin/rails db:reset",
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Compile Assets",
+      "type": "shell",
+      "command": "bin/rails assets:precompile",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Run Tests",
+      "type": "shell",
+      "command": "bin/rails test",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Yarn Install",
+      "type": "shell",
+      "command": "yarn install",
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Bundle Install",
+      "type": "shell",
+      "command": "bundle install",
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    }
+  ]
+}
