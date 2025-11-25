@@ -18,12 +18,14 @@
     <link rel="icon" href="/logo.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.4/dist/semantic.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
+
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%#= stylesheet_link_tag :application %>
     <%= javascript_pack_tag "application" %>
-    <% if !Rails.env.development? %>
-      <%= stylesheet_pack_tag 'application' %>
-    <% end %>
+    <%= stylesheet_pack_tag 'application' %>
   </head>
 
   <body>
@@ -34,42 +36,15 @@
           BattMan
         </a>
 
-        <a href="<%= batteries_path %>" class="item">Batteries</a>
-        <a href="<%= devices_path %>" class="item">Devices</a>
-
-        <div class="ui simple dropdown item">
-          Dropdown <i class="dropdown icon"></i>
-          <div class="menu">
-            <a class="item" href="#">Link Item</a>
-            <a class="item" href="#">Link Item</a>
-            <div class="divider"></div>
-            <div class="header">Header Item</div>
-            <div class="item">
-              <i class="dropdown icon"></i>
-              Sub Menu
-              <div class="menu">
-                <a class="item" href="#">Link Item</a>
-                <a class="item" href="#">Link Item</a>
-              </div>
-            </div>
-            <a class="item" href="#">Link Item</a>
-          </div>
-        </div>
+        <%= menu_item "Batteries", batteries_path %>
+        <%= menu_item "Devices", devices_path %>
       </div>
     </div>
 
-    <div class="ui main text container">
+    <div class="ui main container">
       <%= yield %>
-      <h1 class="ui header">Semantic UI Fixed Template</h1>
-      <p>This is a basic fixed menu template using fixed size containers.</p>
-      <p>A text container is used for the main container, which is useful for single column layouts</p>
-      <img class="wireframe" src="assets/images/wireframe/media-paragraph.png">
-      <img class="wireframe" src="https://semantic-ui.com/examples/assets/images/wireframe/paragraph.png">
-      <img class="wireframe" src="https://semantic-ui.com/examples/assets/images/wireframe/paragraph.png">
-      <img class="wireframe" src="https://semantic-ui.com/examples/assets/images/wireframe/paragraph.png">
-      <img class="wireframe" src="https://semantic-ui.com/examples/assets/images/wireframe/paragraph.png">
-      <img class="wireframe" src="https://semantic-ui.com/examples/assets/images/wireframe/paragraph.png">
-      <img class="wireframe" src="https://semantic-ui.com/examples/assets/images/wireframe/paragraph.png">
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.4/dist/semantic.min.js"></script>
   </body>
 </html>

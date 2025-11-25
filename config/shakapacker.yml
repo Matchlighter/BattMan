@@ -132,11 +132,11 @@ development:
     # For running dev server with https, set `server: https`.
     # server: https
 
-    host: localhost
-    port: 3035
+    host: 127.0.0.1
+    port: 3039
     # Hot Module Replacement updates modules while the application is running without a full reload
     # Used instead of the `hot` key in https://webpack.js.org/configuration/dev-server/#devserverhot
-    hmr: true
+    hmr: false
     # If HMR is on, CSS will be inlined by delivering it as part of the script payload via style-loader. Be sure
     # that you add style-loader to your project dependencies.
     #

@@ -1,0 +1,4 @@
+development:
+  url: "mqtt://iot:pass@10.1.2.74"
+
+production: <%= Rails.application.credentials.mqtt %>

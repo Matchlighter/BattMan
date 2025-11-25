@@ -1,0 +1,96 @@
+<h1>
+  <%= @battery.id %>
+</h1>
+
+<div class="ui grid">
+  <div class="four wide column">
+    <div class="ui segment">
+      <h4 class="ui header">Info</h4>
+      <div class="ui list">
+        <div class="item">
+          <strong>ID:</strong>
+          <%= @battery.id %>
+        </div>
+        <% @battery.parsed_id.each do |key, value| %>
+          <div class="item">
+            <strong>
+              <%= key.to_s.titleize %>:
+            </strong> <code><%= value %></code>
+          </div>
+        <% end %>
+        <div class="item">
+          <strong>First Seen:</strong>
+          <%= local_time(@battery.created_at) %>
+        </div>
+      </div>
+    </div>
+
+    <% device=@battery.current_device %>
+    <% if device.present? %>
+      <div class="ui segment">
+        <div style="display: flex;">
+          <h4 class="ui header" style="flex: 1; margin-bottom: 0;;">Current Device</h4>
+          <a href="<%= device_path(device) %>">
+            <i class="external alternate icon" style="margin-left: 8px;"></i>
+          </a>
+        </div>
+        <div class="ui list">
+          <% if device.human_name.present? %>
+            <div class="item">
+              <strong>Name:</strong> <a href="<%= device_path(device) %>">
+                <%= device.human_name %>
+              </a>
+            </div>
+          <% end %>
+
+          <div class="item">
+            <strong>ID:</strong>
+            <%= device.id %>
+          </div>
+
+          <div class="item">
+            <strong>Since:</strong>
+            <%= local_time(@battery.versions.last.created_at) %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  <div class="twelve wide column">
+    <div class="ui segment">
+      <h4 class="ui header">History</h4>
+      <table class="ui very basic celled table">
+        <tbody>
+          <% @battery.versions.reverse.each do |version| %>
+            <tr>
+              <td>
+                <%= local_time(version.created_at) %>
+              </td>
+              <td>
+                <% if version.item.current_device.present? %>
+                  <a href="<%= device_path(version.item.current_device) %>">
+                    <div style="display: flex;">
+                      <div>
+                        <i class="mobile alternate icon"></i>
+                      </div>
+                      <div>
+                        <strong>
+                          <%= version.item.current_device.human_name || version.item.current_device.id %>
+                        </strong><br>
+                        <small class="text-muted" style="margin-left: 6px;">
+                          <%= version.item.current_device.id %>
+                        </small>
+                      </div>
+                    </div>
+                  </a>
+                <% else %>
+                  -
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

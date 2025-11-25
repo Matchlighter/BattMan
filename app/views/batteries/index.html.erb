@@ -1,0 +1,44 @@
+<table class="ui celled table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Current Device</th>
+      <th>Last Checkin</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @batteries.each do |battery| %>
+      <tr>
+        <td>
+          <a href="<%= battery_path(battery) %>">
+            <%= battery.id %>
+          </a>
+        </td>
+        <td>
+          <% if battery.current_device.present? %>
+            <a href="<%= device_path(battery.current_device) %>">
+              <div style="display: flex;">
+                <div>
+                  <i class="mobile alternate icon"></i>
+                </div>
+                <div>
+                  <strong>
+                    <%= battery.current_device.human_name || battery.current_device.id %>
+                  </strong><br>
+                  <small class="text-muted" style="margin-left: 6px;">
+                    <%= battery.current_device.id %>
+                  </small>
+                </div>
+              </div>
+            </a>
+          <% else %>
+            -
+          <% end %>
+        </td>
+        <td>
+          <%= local_time(battery.updated_at) %>
+        </td>
+      </tr>
+      <% end %>
+  </tbody>
+</table>

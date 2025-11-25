@@ -1849,6 +1849,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hotwired/turbo-rails@npm:^8.0.20":
+  version: 8.0.20
+  resolution: "@hotwired/turbo-rails@npm:8.0.20"
+  dependencies:
+    "@hotwired/turbo": "npm:^8.0.20"
+    "@rails/actioncable": "npm:>=7.0"
+  checksum: 10c0/b443c03ad9d4fdec660f0a52e20cec72c5747a2765a92b089f23aff1e0796b05cc7245d91a569135922fc6737da499e620b7d3935eeeccf4e0fa5160e508ecea
+  languageName: node
+  linkType: hard
+
+"@hotwired/turbo@npm:^8.0.20":
+  version: 8.0.20
+  resolution: "@hotwired/turbo@npm:8.0.20"
+  checksum: 10c0/bff9a871d2131e4006e3f085fea93906d89bc19cfb6b57f10d8ebe0ff1637632f2f5f69bb0e7a6221b315df1ff2fdf4a833bffdfde03b846b7eba4580cf78d87
+  languageName: node
+  linkType: hard
+
 "@isaacs/balanced-match@npm:^4.0.1":
   version: 4.0.1
   resolution: "@isaacs/balanced-match@npm:4.0.1"
@@ -2152,7 +2169,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rails/actioncable@npm:^8.0.300":
+"@rails/actioncable@npm:>=7.0, @rails/actioncable@npm:^8.0.300":
   version: 8.1.100
   resolution: "@rails/actioncable@npm:8.1.100"
   checksum: 10c0/a9c1f1b62bf3d73408997036f92b9264b33fc6211f7fcfb79d8e2421dc277f80182df835a9525f1f77ed2043da8ea2af345fb428fa0f3fe7b52da12c9600b35d
@@ -2594,7 +2611,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/semantic-ui@npm:^2":
+"@types/semantic-ui@npm:^2.2.9":
   version: 2.2.9
   resolution: "@types/semantic-ui@npm:2.2.9"
   dependencies:
@@ -3054,6 +3071,7 @@ __metadata:
     "@babel/preset-react": "npm:^7.27.1"
     "@babel/preset-typescript": "npm:^7.27.1"
     "@babel/runtime": "npm:^7.28.4"
+    "@hotwired/turbo-rails": "npm:^8.0.20"
     "@matchlighter/cognizant_forms": "npm:~0.7.2"
     "@matchlighter/common_library": "npm:^1.6.31"
     "@matchlighter/fetcher": "npm:^0.6.5"
@@ -3061,7 +3079,7 @@ __metadata:
     "@pmmmwh/react-refresh-webpack-plugin": "npm:^0.6.1"
     "@rails/actioncable": "npm:^8.0.300"
     "@types/react": "npm:^19.1.12"
-    "@types/semantic-ui": "npm:^2"
+    "@types/semantic-ui": "npm:^2.2.9"
     axios: "npm:^1.11.0"
     babel-loader: "npm:^8.4.1"
     compression-webpack-plugin: "npm:^11.1.0"
@@ -3069,6 +3087,7 @@ __metadata:
     css-minimizer-webpack-plugin: "npm:^7.0.2"
     less: "npm:^4.4.2"
     less-loader: "npm:^12.3.0"
+    local-time: "npm:^3.0.3"
     mini-css-extract-plugin: "npm:^2.9.4"
     mobx: "npm:^6.11"
     mobx-react: "npm:^7.0"
@@ -5475,6 +5494,13 @@ __metadata:
     emojis-list: "npm:^3.0.0"
     json5: "npm:^2.1.2"
   checksum: 10c0/d5654a77f9d339ec2a03d88221a5a695f337bf71eb8dea031b3223420bb818964ba8ed0069145c19b095f6c8b8fd386e602a3fc7ca987042bd8bb1dcc90d7100
+  languageName: node
+  linkType: hard
+
+"local-time@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "local-time@npm:3.0.3"
+  checksum: 10c0/452f291576f44cceb1c2ffb014376aa6513d03ea0562a114591bb0d40be4e0a0de5f95334344d43c1d92e1511081bf030c8bec7d0ad87421c750b5ceef7cded6
   languageName: node
   linkType: hard
 

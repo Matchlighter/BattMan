@@ -1,0 +1,40 @@
+<div class="ui <%= scan_log.status == "error" ? "error" : "info" %> toast">
+    <div class="content">
+        <div class="ui header">
+            Scan
+        </div>
+        <div class="message">
+            <div>
+                <%= scan_log.message %>
+            </div>
+            <div class="ui list">
+                <div class="item">
+                    <strong>Object:</strong>
+                    <% if scan_log.object.nil? %>
+                        N/A
+                    <% else %>
+                        <a href="<%= url_for(scan_log.object) %>">
+                            <%= scan_log.object.id %> (<%= scan_log.object.class.name %>)
+                        </a>
+                    <% end %>
+                </div>
+                <div class="item">
+                    <strong>Scanner:</strong>
+                    <%= scan_log.scanner.id %>
+                </div>
+                <div class="item">
+                    <strong>Timestamp:</strong>
+                    <%= local_time(scan_log.created_at) %>
+                </div>
+                <div>
+                    <div>
+                        <strong>Payload:</strong>
+                    </div>
+                    <div class="ui segment">
+                        <code class="small"><%= scan_log.payload %></code>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

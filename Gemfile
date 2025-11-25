@@ -8,8 +8,6 @@ gem "rails", "~> 8.1.1"
 gem "sqlite3", ">= 2.1"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
-# Use Tailwind CSS [https://github.com/rails/tailwindcss-rails]
-# gem "tailwindcss-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 
@@ -66,3 +64,11 @@ gem "shakapacker", "~> 9.4"
 gem "react-rails", "~> 3.2"
 
 gem "paper_trail", "~> 17.0"
+
+gem "mqtt", "~> 0.7.0"
+
+gem "goldiloader", "~> 6.0"
+
+gem "local_time", "~> 3.0"
+
+gem "turbo-rails", "~> 2.0"

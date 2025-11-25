@@ -14,6 +14,7 @@
     "@babel/preset-react": "^7.27.1",
     "@babel/preset-typescript": "^7.27.1",
     "@babel/runtime": "^7.28.4",
+    "@hotwired/turbo-rails": "^8.0.20",
     "@matchlighter/cognizant_forms": "~0.7.2",
     "@matchlighter/common_library": "^1.6.31",
     "@matchlighter/fetcher": "^0.6.5",
@@ -26,6 +27,7 @@
     "css-minimizer-webpack-plugin": "^7.0.2",
     "less": "^4.4.2",
     "less-loader": "^12.3.0",
+    "local-time": "^3.0.3",
     "mini-css-extract-plugin": "^2.9.4",
     "mobx": "^6.11",
     "mobx-react": "^7.0",
@@ -52,7 +54,7 @@
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.6.1",
     "@types/react": "^19.1.12",
-    "@types/semantic-ui": "^2",
+    "@types/semantic-ui": "^2.2.9",
     "react-refresh": "^0.17.0",
     "type-fest": "^4.41.0",
     "webpack-dev-server": "^5.2.2"
