@@ -64,6 +64,7 @@ gem "shakapacker", "~> 9.4"
 gem "react-rails", "~> 3.2"
 
 gem "paper_trail", "~> 17.0"
+gem 'paper_trail-globalid'
 
 gem "mqtt", "~> 0.7.0"
 
@@ -72,3 +73,11 @@ gem "goldiloader", "~> 6.0"
 gem "local_time", "~> 3.0"
 
 gem "turbo-rails", "~> 2.0"
+
+gem "pg", "~> 1.6"
+
+gem "miscellany", "~> 0.1.31"
+
+gem "activerecord-import", "~> 2.2"
+
+gem "where_exists", "~> 3.2"

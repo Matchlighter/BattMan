@@ -7,3 +7,60 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+def tag_type(type, **options)
+  TagType.find_or_create_by(id: type) do |tt|
+    tt.assign_attributes(options)
+  end
+end
+
+tag_type "template", type: :boolean, inheritable: false
+tag_type "builtin", type: :boolean, inheritable: false
+tag_type "can-belong-to", type: "string[]"
+tag_type "belongs-to", type: :reference, inheritable: false
+
+def define_template(type, *tags)
+  tags << "template"
+  tags << "builtin"
+
+  computed_tags = {}
+  computed_tags[type] = {}
+  tags.each do |t|
+    if t.is_a?(Hash)
+      computed_tags.merge!(t)
+    else
+      computed_tags[t] = true
+    end
+  end
+
+  Thing.find_by(id: type) || Thing.create!(
+    id: type,
+    own_tags: computed_tags,
+  )
+end
+
+define_template("Location",
+  "can-belong-to" => ["Location"],
+)
+
+define_template("Item",
+  "can-belong-to" => ["Location"],
+  "maintenance-schedule" => {},
+)
+
+define_template("Appliance",
+  "warranty" => {},
+  "manual" => {},
+  "implements" => ["Item"]
+)
+
+define_template("Device",
+  "implements" => ["Item"],
+  "uses-batteries" => true,
+)
+
+define_template("Battery",
+  "implements" => ["Item"],
+  "can-belong-to" => ["uses-batteries"],
+  "last-charged" => {}
+)

@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+set -e
+
+CONTAINER_NAME="battman-postgres"
+POSTGRES_USER="${DB_USERNAME:-battman}"
+POSTGRES_PASSWORD="${DB_PASSWORD:-battman_dev}"
+POSTGRES_DB="battman_development"
+POSTGRES_PORT="${DB_PORT:-5432}"
+
+# Check if container already exists
+if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+  # Container exists, check if it's running
+  if docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+    echo "✓ PostgreSQL container is already running"
+    echo "  Host: localhost"
+    echo "  Port: ${POSTGRES_PORT}"
+    echo "  User: ${POSTGRES_USER}"
+    echo "  Database: ${POSTGRES_DB}"
+    exit 0
+  else
+    echo "Starting existing PostgreSQL container..."
+    docker start "${CONTAINER_NAME}"
+  fi
+else
+  echo "Creating and starting PostgreSQL container..."
+  docker run -d \
+    --name "${CONTAINER_NAME}" \
+    --network=host \
+    -e POSTGRES_USER="${POSTGRES_USER}" \
+    -e POSTGRES_PASSWORD="${POSTGRES_PASSWORD}" \
+    -e POSTGRES_DB="${POSTGRES_DB}" \
+    -p "${POSTGRES_PORT}:5432" \
+    -v "$(pwd)/tmp/postgres-data":/var/lib/postgresql/data \
+    postgres:16-alpine
+  
+  echo "Waiting for PostgreSQL to be ready..."
+  sleep 3
+  
+  # Create test database
+  docker exec "${CONTAINER_NAME}" psql -U "${POSTGRES_USER}" -c "CREATE DATABASE battman_test;" 2>/dev/null || true
+fi
+
+echo ""
+echo "✓ PostgreSQL is running!"
+echo ""
+echo "Connection details:"
+echo "  Host:     localhost"
+echo "  Port:     ${POSTGRES_PORT}"
+echo "  User:     ${POSTGRES_USER}"
+echo "  Password: ${POSTGRES_PASSWORD}"
+echo "  Database: ${POSTGRES_DB}"
+echo ""
+echo "Set these environment variables:"
+echo "  export DB_USERNAME=${POSTGRES_USER}"
+echo "  export DB_PASSWORD=${POSTGRES_PASSWORD}"
+echo ""
+echo "To stop: docker stop ${CONTAINER_NAME}"
+echo "To remove: docker rm -f ${CONTAINER_NAME}"
+echo "To remove data: rm -rf tmp/postgres-data"

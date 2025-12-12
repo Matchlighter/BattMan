@@ -10,7 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_25_144848) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_11_185146) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_catalog.plpgsql"
+
   create_table "batteries", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "current_device_id"
@@ -43,12 +46,28 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_25_144848) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "tag_types", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "default"
+    t.boolean "inheritable"
+    t.string "key"
+    t.string "type"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "things", id: :string, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.jsonb "own_tags", default: {}
+    t.jsonb "tags", default: {}
+    t.datetime "updated_at", null: false
+  end
+
   create_table "versions", force: :cascade do |t|
     t.datetime "created_at"
     t.string "event", null: false
     t.string "item_id", null: false
     t.string "item_type", null: false
-    t.text "object", limit: 1073741823
+    t.text "object"
     t.string "whodunnit"
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
   end

@@ -56,6 +56,8 @@ GEM
       activemodel (= 8.1.1)
       activesupport (= 8.1.1)
       timeout (>= 0.4.0)
+    activerecord-import (2.2.0)
+      activerecord (>= 4.2)
     activestorage (8.1.1)
       actionpack (= 8.1.1)
       activejob (= 8.1.1)
@@ -176,6 +178,8 @@ GEM
       logger
     mini_mime (1.1.5)
     minitest (5.26.2)
+    miscellany (0.1.31)
+      rails (>= 5, < 9.0)
     mqtt (0.7.0)
       logger
     msgpack (1.8.0)
@@ -211,10 +215,18 @@ GEM
     paper_trail (17.0.0)
       activerecord (>= 7.1)
       request_store (~> 1.4)
+    paper_trail-globalid (0.2.0)
+      globalid
+      paper_trail (>= 3.0.0)
     parallel (1.27.0)
     parser (3.3.10.0)
       ast (~> 2.4.1)
       racc
+    pg (1.6.2)
+    pg (1.6.2-aarch64-linux)
+    pg (1.6.2-aarch64-linux-musl)
+    pg (1.6.2-x86_64-linux)
+    pg (1.6.2-x86_64-linux-musl)
     pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
@@ -389,6 +401,8 @@ GEM
       base64
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
+    where_exists (3.2.1)
+      activerecord (>= 5.2, < 8.2)
     xpath (3.2.0)
       nokogiri (~> 1.8)
     zeitwerk (2.7.3)
@@ -404,6 +418,7 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
+  activerecord-import (~> 2.2)
   bootsnap
   brakeman
   bundler-audit
@@ -414,8 +429,11 @@ DEPENDENCIES
   jbuilder
   kamal
   local_time (~> 3.0)
+  miscellany (~> 0.1.31)
   mqtt (~> 0.7.0)
   paper_trail (~> 17.0)
+  paper_trail-globalid
+  pg (~> 1.6)
   puma (>= 5.0)
   rails (~> 8.1.1)
   react-rails (~> 3.2)
@@ -430,6 +448,7 @@ DEPENDENCIES
   turbo-rails (~> 2.0)
   tzinfo-data
   web-console
+  where_exists (~> 3.2)
 
 BUNDLED WITH
    2.6.9
