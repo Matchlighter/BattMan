@@ -1,0 +1,33 @@
+
+header.ant-layout-header {
+    flex-wrap: wrap;
+    min-height: 64px;
+    height: auto;
+}
+
+.main-sidebar {
+    .ant-layout-sider-children, .ant-drawer-body {
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+.logo-sidebar {
+    color: white;
+    padding: 10px;
+    margin-left: 4px;
+    gap: 10px;
+
+    .ant-layout-sider-collapsed & {
+        .logo-logotype {
+            display: none;
+        }
+
+        margin-left: 0;
+        justify-content: center;
+    }
+
+    .logo-icon {
+        background-color: white;
+    }
+}

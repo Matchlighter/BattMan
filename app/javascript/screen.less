@@ -12,17 +12,6 @@
 .logo-sidebar {
     display: flex;
     align-items: center;
-    color: var(--mantine-color-text);
-    gap: 8px;
-
-    .ant-layout-sider-collapsed & {
-        .logo-logotype {
-            display: none;
-        }
-
-        margin-left: 0;
-        justify-content: center;
-    }
 
     .logo-logotype {
         flex-shrink: 0;
@@ -42,75 +31,8 @@
         flex-shrink: 0;
         width: 40px;
         height: 40px;
-        background-color: var(--mantine-color-text);
         -webkit-mask: url("/public/logo.svg") no-repeat center;
         mask: url("/public/logo.svg") no-repeat center;
         mask-position: 50% 50%;
-    }
-}
-
-.ui.menu .item img.logo {
-    margin-right: 1.5em;
-}
-
-.main.container {
-    margin-top: 5em;
-}
-
-.wireframe {
-    margin-top: 2em;
-}
-
-.ui.footer.segment {
-    margin: 5em 0em 0em;
-    padding: 5em 0em;
-}
-
-code.small {
-    font-size: 80%;
-    color: darkred;
-}
-
-table.ui>tbody>tr {
-    td.cell-actions {
-        width: 0;
-        text-align: right;
-        white-space: nowrap;
-    }
-}
-
-.mantine-AppShell-navbar {
-    transition: width 0.3s;
-
-    .mantine-NavLink-root {
-        width: auto;
-    }
-
-    .mantine-NavLink-children {
-        background: rgba(0, 0, 0, 0.2);
-        padding: 0;
-
-        > .mantine-NavLink-root {
-            padding-left: 24px;
-        }
-    }
-
-    &.navbar-icons-only {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-
-        .mantine-NavLink-root {
-            border-radius: 6px;
-            // margin: 0px 8px;
-            svg {
-                vertical-align: middle;
-                margin-bottom: 4px;
-            }
-        }
-
-        .logo-logotype {
-            display: none;
-        }
     }
 }

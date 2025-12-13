@@ -12,13 +12,13 @@ import {
     MenuUnfoldOutlined,
     SettingOutlined
 } from '@ant-design/icons';
-import { Button, Drawer, Flex, Input, Layout, Menu, theme } from 'antd';
+import { Button, ConfigProvider, Drawer, Flex, Input, Layout, Menu, theme } from 'antd';
 import type { ItemType, MenuItemType } from "antd/es/menu/interface";
 
 import { dft } from "@matchlighter/common_library/data/traversal";
 
 import { AppStore } from "@/data/app_store";
-
+import "./screen.ant.less";
 
 const { Header, Sider, Content } = Layout;
 
@@ -76,7 +76,7 @@ const AppMenu = observer(() => {
 
     return <>
         <Menu
-            theme="dark"
+            // theme="dark"
             mode="inline"
             // defaultSelectedKeys={['1']}
             selectedKeys={selectedKeys}
@@ -117,7 +117,7 @@ const MenuBar = observer(() => {
             size={200}
             styles={{
                 body: {
-                    background: "#001529",
+                    background: "#141414",
                     padding: 0,
                 }
             }}
@@ -128,6 +128,7 @@ const MenuBar = observer(() => {
         return <Sider
             className="main-sidebar"
             trigger={null}
+            theme="light"
             collapsible
             collapsed={store.isSmallDevice || store.sidebarCollapsed}
         >
@@ -136,51 +137,78 @@ const MenuBar = observer(() => {
     }
 });
 
-export const AppLayout = observer((props: { children?: React.ReactNode }) => {
+const InnerLayout = observer((props: { children?: React.ReactNode }) => {
     const store = useContext(AppStore.Context);
 
     const {
         token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
 
-    return <>
-        <Layout style={{ height: "100vh" }}>
-            <MenuBar />
-            <Layout>
-                <Header style={{ padding: 0, background: colorBgContainer, display: "flex" }}>
-                    <Button
-                        type="text"
-                        icon={store.sidebarCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-                        onClick={() => store.sidebarCollapsed = !store.sidebarCollapsed}
-                        style={{
-                            fontSize: '16px',
-                            width: 64,
-                            height: 64,
-                        }}
-                    />
-                    <div style={{ flexGrow: 1 }} />
-                    <Flex align="center" gap="small" style={{ padding: "10px", width: "30%", maxWidth: "400px", flex: 1, minWidth: "250px" }}>
-                        <Input.Search style={{}} placeholder="Search..." variant="underlined" />
-                        <Button title="Scan with camera">
-                            <MdOutlineCameraAlt />
-                        </Button>
-                        <Button title="Link barcode scanner">
-                            <MdBarcodeReader />
-                        </Button>
-                    </Flex>
-                </Header>
-                <Content
+    return <Layout style={{ height: "100vh" }}>
+        <MenuBar />
+        <Layout>
+            <Header style={{ padding: 0, background: colorBgContainer, display: "flex" }}>
+                <Button
+                    type="text"
+                    icon={store.sidebarCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                    onClick={() => store.sidebarCollapsed = !store.sidebarCollapsed}
                     style={{
-                        margin: '24px 16px',
-                        padding: 24,
-                        minHeight: 280,
-                        background: colorBgContainer,
-                        borderRadius: borderRadiusLG,
+                        fontSize: '16px',
+                        width: 64,
+                        height: 64,
                     }}
-                >
-                    {props.children}
-                </Content>
-            </Layout>
+                />
+                <div style={{ flexGrow: 1 }} />
+                <Flex align="center" gap="small" style={{ padding: "10px", width: "30%", maxWidth: "400px", flex: 1, minWidth: "250px" }}>
+                    <Input.Search style={{}} placeholder="Search..." variant="underlined" />
+                    <Button title="Scan with camera">
+                        <MdOutlineCameraAlt />
+                    </Button>
+                    <Button title="Link barcode scanner">
+                        <MdBarcodeReader />
+                    </Button>
+                </Flex>
+            </Header>
+            <Content
+                style={{
+                    margin: '24px 16px',
+                    padding: 24,
+                    minHeight: 280,
+                    background: colorBgContainer,
+                    borderRadius: borderRadiusLG,
+                }}
+            >
+                {props.children}
+            </Content>
         </Layout>
+    </Layout>
+});
+
+export const AppLayout = observer((props: { children?: React.ReactNode }) => {
+    return <>
+        <ConfigProvider
+            theme={{
+                algorithm: theme.darkAlgorithm,
+                token: {
+                    // colorBgBase: "yellow",
+                    colorPrimary: 'rgba(196, 171, 45, 1)',
+                    // colorPrimaryBg: "red",
+                },
+                components: {
+                    Layout: {
+                        // siderBg: "#333",
+                        /* here is your component tokens */
+                    },
+                    Menu: {
+                        // darkItemBg: "#333",
+                        // darkSubMenuItemBg: "#222",
+                        // darkItemHoverBg: "red",
+                        // darkItemSelectedBg: "red",
+                    },
+                },
+            }}
+        >
+            <InnerLayout {...props} />
+        </ConfigProvider>
     </>
 })

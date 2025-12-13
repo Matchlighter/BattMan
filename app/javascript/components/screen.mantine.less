@@ -1,0 +1,45 @@
+
+.logo-sidebar {
+    color: var(--mantine-color-text);
+    gap: 8px;
+
+    .logo-icon {
+        background-color: var(--mantine-color-text);
+    }
+}
+
+.mantine-AppShell-navbar {
+    transition: width 0.3s;
+
+    .mantine-NavLink-root {
+        width: auto;
+    }
+
+    .mantine-NavLink-children {
+        background: rgba(0, 0, 0, 0.2);
+        padding: 0;
+
+        > .mantine-NavLink-root {
+            padding-left: 24px;
+        }
+    }
+
+    &.navbar-icons-only {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .mantine-NavLink-root {
+            border-radius: 6px;
+            // margin: 0px 8px;
+            svg {
+                vertical-align: middle;
+                margin-bottom: 4px;
+            }
+        }
+
+        .logo-logotype {
+            display: none;
+        }
+    }
+}

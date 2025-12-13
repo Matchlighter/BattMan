@@ -1,14 +1,15 @@
 import { observer } from "mobx-react";
-import { ComponentProps, useContext } from "react";
-import { Link, useHistory, useLocation } from "react-router-dom";
+import { useContext } from "react";
+import { Link, useLocation } from "react-router-dom";
 
-import { ActionIcon, AppShell, Box, Burger, Group, Menu, NavLink, ScrollArea, Text, Tooltip, UnstyledButton } from "@mantine/core";
+import { AppShell, Box, Burger, createTheme, Group, MantineProvider, Menu, NavLink, ScrollArea, Text, Tooltip } from "@mantine/core";
 import type { ItemType, MenuItemType } from "antd/es/menu/interface";
 import { MdDevices, MdLocationPin, MdMicrowave, MdOutlineAccountTree, MdSettings, MdShoppingCart, MdSpaceDashboard } from "react-icons/md";
 
 import { dft } from "@matchlighter/common_library/data/traversal";
 
 import { AppStore } from "@/data/app_store";
+import "./screen.mantine.less";
 
 const MENU_ITEMS: ItemType<MenuItemType>[] = [
     {
@@ -146,6 +147,10 @@ function NavLinks(props: { links: ItemType<MenuItemType>[] }) {
     return <>{link_components}</>;
 }
 
+const mtheme = createTheme({
+    primaryColor: "yellow",
+})
+
 export const AppLayout = observer((props: { children?: React.ReactNode }) => {
     const store = useContext(AppStore.Context);
 
@@ -153,46 +158,48 @@ export const AppLayout = observer((props: { children?: React.ReactNode }) => {
     const toggle = () => { store.sidebarCollapsed = !store.sidebarCollapsed; }
 
     return <>
-        <AppShell
-            layout="alt"
-            header={{ height: 64 }}
-            footer={{ height: 60 }}
-            navbar={{ width: collapsed ? 64 : 220, breakpoint: 'sm', collapsed: { mobile: collapsed, desktop: false } }}
-            padding="md"
-        >
-            <AppShell.Header>
-                <Group h="100%" px="md">
-                    <Burger opened={!collapsed} onClick={toggle} size="sm" />
-                    Header
-                </Group>
-            </AppShell.Header>
+        <MantineProvider theme={mtheme} defaultColorScheme="dark">
+            <AppShell
+                layout="alt"
+                header={{ height: 64 }}
+                footer={{ height: 60 }}
+                navbar={{ width: collapsed ? 64 : 220, breakpoint: 'sm', collapsed: { mobile: collapsed, desktop: false } }}
+                padding="md"
+            >
+                <AppShell.Header>
+                    <Group h="100%" px="md">
+                        <Burger opened={!collapsed} onClick={toggle} size="sm" />
+                        Header
+                    </Group>
+                </AppShell.Header>
 
-            <AppShell.Navbar className={(collapsed && !store.isSmallDevice) ? "navbar-icons-only" : ""}>
-                <Group p="md">
-                    <Burger opened={!collapsed} onClick={toggle} hiddenFrom="sm" size="sm" />
-                    <div className="logo-sidebar">
-                        <div className="logo-icon" />
-                        <div className="logo-logotype">
-                            <div title="Now for more than just batteries!" className="logo-title">BattMan</div>
-                            <div className="logo-subtitle">Home Inventory Management</div>
+                <AppShell.Navbar className={(collapsed && !store.isSmallDevice) ? "navbar-icons-only" : ""}>
+                    <Group p="md">
+                        <Burger opened={!collapsed} onClick={toggle} hiddenFrom="sm" size="sm" />
+                        <div className="logo-sidebar">
+                            <div className="logo-icon" />
+                            <div className="logo-logotype">
+                                <div title="Now for more than just batteries!" className="logo-title">BattMan</div>
+                                <div className="logo-subtitle">Home Inventory Management</div>
+                            </div>
                         </div>
-                    </div>
-                </Group>
-                <ScrollArea type="never">
-                    <Box hidden={store.isCompactNavBar}>
-                        <NavLinks links={MENU_ITEMS} />
-                    </Box>
-                    <Box hidden={!store.isCompactNavBar} p="6px">
-                        <CompactNavLinks links={MENU_ITEMS} />
-                    </Box>
-                </ScrollArea>
-            </AppShell.Navbar>
+                    </Group>
+                    <ScrollArea type="never">
+                        <Box hidden={store.isCompactNavBar}>
+                            <NavLinks links={MENU_ITEMS} />
+                        </Box>
+                        <Box hidden={!store.isCompactNavBar} p="6px">
+                            <CompactNavLinks links={MENU_ITEMS} />
+                        </Box>
+                    </ScrollArea>
+                </AppShell.Navbar>
 
-            <AppShell.Main>
-                <Text>This is the main section, your app content here.</Text>
-                <Text>Alt layout demo – navbar and aside go all the way from top to bottom.</Text>
-            </AppShell.Main>
-            <AppShell.Footer p="md">Footer</AppShell.Footer>
-        </AppShell>
+                <AppShell.Main>
+                    <Text>This is the main section, your app content here.</Text>
+                    <Text>Alt layout demo – navbar and aside go all the way from top to bottom.</Text>
+                </AppShell.Main>
+                <AppShell.Footer p="md">Footer</AppShell.Footer>
+            </AppShell>
+        </MantineProvider>
     </>
 })

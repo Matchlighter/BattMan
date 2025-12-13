@@ -5,26 +5,19 @@ import "@/bootstrap";
 import "@/screen.less";
 
 import "@/cable_toast";
-import { AppLayout } from "@/components/AppLayout.mantine";
+import { AppLayout } from "@/components/AppLayout.ant";
 import { AppStore } from "@/data/app_store";
-import { MantineProvider, createTheme } from "@mantine/core";
-
-const theme = createTheme({
-    primaryColor: "yellow",
-})
 
 export default class App extends React.Component {
     store = new AppStore();
     render() {
         return <>
             <AppStore.Context.Provider value={this.store}>
-                <MantineProvider theme={theme} defaultColorScheme="dark">
-                    <BrowserRouter>
-                        <AppLayout>
+                <BrowserRouter>
+                    <AppLayout>
 
-                        </AppLayout>
-                    </BrowserRouter>
-                </MantineProvider>
+                    </AppLayout>
+                </BrowserRouter>
             </AppStore.Context.Provider>
         </>
     }
