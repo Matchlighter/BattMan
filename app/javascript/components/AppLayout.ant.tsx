@@ -1,6 +1,6 @@
 import cnames from "classnames";
 import { observer } from "mobx-react";
-import { useContext } from "react";
+import { ComponentProps, useContext } from "react";
 import { useHistory, useLocation } from "react-router";
 
 import { MdBarcodeReader, MdDevices, MdLocationPin, MdMicrowave, MdOutlineCameraAlt, MdShoppingCart } from "react-icons/md";
@@ -136,28 +136,32 @@ const InnerLayout = observer((props: { children?: React.ReactNode }) => {
         token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
 
+    const search_props: ComponentProps<typeof Input.Search> = {
+        variant: "underlined",
+        placeholder: "Search...",
+    }
+
     return <Layout style={{ height: "100vh" }}>
         <MenuBar />
         <Layout>
-            <Layout.Header style={{ padding: 0, background: colorBgContainer, display: "flex" }}>
-                <Button
-                    type="text"
-                    icon={store.sidebarCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-                    onClick={() => store.sidebarCollapsed = !store.sidebarCollapsed}
-                    style={{
-                        // position: "absolute",
-                        fontSize: '16px',
-                        width: 64,
-                        height: 64,
-                    }}
-                />
-                <Flex align="center" wrap="wrap-reverse" gap="small" style={{ justifyContent: "end", padding: "10px", flex: 1, }}>
-                    <div style={{ lineHeight: 0, display: "flex", gap: "8px", flex: 1, justifyContent: "end", }}>
-                        <Input.Search
-                            style={{ maxWidth: "300px", minWidth: "200px", flex: 1 }}
-                            variant="underlined"
-                            placeholder="Search..."
-                        />
+            <Layout.Header style={{ padding: 0, background: colorBgContainer }}>
+                <Flex align="center" wrap="wrap-reverse" gap="small" style={{ flex: 1, }}>
+                    <Button
+                        type="text"
+                        icon={store.sidebarCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                        onClick={() => store.sidebarCollapsed = !store.sidebarCollapsed}
+                        style={{
+                            // position: "absolute",
+                            fontSize: '16px',
+                            width: 64,
+                            height: 64,
+                        }}
+                    />
+                    <div style={{ lineHeight: 0, display: "flex", gap: "8px", flex: 1, justifyContent: "end", paddingRight: "10px" }}>
+                        {!store.isSmallDevice && <Input.Search
+                            style={{ maxWidth: "300px", flex: 1 }}
+                            {...search_props}
+                        />}
                         <Button title="Scan with camera">
                             <MdOutlineCameraAlt />
                         </Button>
@@ -166,6 +170,15 @@ const InnerLayout = observer((props: { children?: React.ReactNode }) => {
                         </Button>
                     </div>
                 </Flex>
+
+                {/* TODO A CSS-only solution to wrapping just the search input would be nice, but for now we use a conditional rendering */}
+                {/*   The previous commit has a more CSS-based solution, but it was incomplete/buggy */}
+                {store.isSmallDevice && <div style={{ display: "flex", padding: "0 10px 10px" }}>
+                    <Input.Search
+                        style={{ flex: 1 }}
+                        {...search_props}
+                    />
+                </div>}
             </Layout.Header>
             <Layout.Content
                 style={{
