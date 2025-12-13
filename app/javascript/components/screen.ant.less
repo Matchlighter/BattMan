@@ -10,10 +10,25 @@ header.ant-layout-header {
         display: flex;
         flex-direction: column;
     }
+
+    &.as-drawer {
+        position: absolute;
+        right: 100vw;
+        transition: right 0.3s ease;
+        height: 100vh;
+        z-index: 100;
+
+        width: 100vw !important;
+        max-width: none !important;
+
+        &.open {
+            right: 0;
+        }
+    }
 }
 
 .logo-sidebar {
-    color: white;
+    color: var(--ant-color-text);
     padding: 10px;
     margin-left: 4px;
     gap: 10px;
@@ -28,6 +43,6 @@ header.ant-layout-header {
     }
 
     .logo-icon {
-        background-color: white;
+        background-color: var(--ant-color-text);
     }
 }

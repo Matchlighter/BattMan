@@ -4,7 +4,6 @@ import { BrowserRouter } from "react-router-dom";
 import "@/bootstrap";
 import "@/screen.less";
 
-import "@/cable_toast";
 import { AppLayout } from "@/components/AppLayout.ant";
 import { AppStore } from "@/data/app_store";
 

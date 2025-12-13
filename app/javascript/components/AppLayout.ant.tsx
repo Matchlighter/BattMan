@@ -1,4 +1,4 @@
-import { action } from "mobx";
+import cnames from "classnames";
 import { observer } from "mobx-react";
 import { useContext } from "react";
 import { useHistory, useLocation } from "react-router";
@@ -12,15 +12,13 @@ import {
     MenuUnfoldOutlined,
     SettingOutlined
 } from '@ant-design/icons';
-import { Button, ConfigProvider, Drawer, Flex, Input, Layout, Menu, theme } from 'antd';
+import { App, Button, ConfigProvider, Flex, Input, Layout, Menu, theme, ThemeConfig } from 'antd';
 import type { ItemType, MenuItemType } from "antd/es/menu/interface";
 
 import { dft } from "@matchlighter/common_library/data/traversal";
 
 import { AppStore } from "@/data/app_store";
 import "./screen.ant.less";
-
-const { Header, Sider, Content } = Layout;
 
 const MENU_ITEMS: ItemType<MenuItemType>[] = [
     {
@@ -71,6 +69,7 @@ dft(MENU_ITEMS, (node) => {
 const AppMenu = observer(() => {
     const history = useHistory();
     const location = useLocation();
+    const store = useContext(AppStore.Context);
 
     const selectedKeys = ALL_KEYS.filter(key => location.pathname.startsWith(key));
 
@@ -82,14 +81,40 @@ const AppMenu = observer(() => {
             selectedKeys={selectedKeys}
             onSelect={(info) => {
                 history.push(info.key);
+                if (store.isSmallDevice) {
+                    store.sidebarCollapsed = true;
+                }
             }}
             items={MENU_ITEMS}
         />
     </>
 })
 
-const MenuBarContent = observer(() => {
-    return <>
+const MenuBar = observer(() => {
+    const store = useContext(AppStore.Context);
+
+    return <Layout.Sider
+        className={cnames("main-sidebar", { "as-drawer": store.isSmallDevice, "open": !store.sidebarCollapsed })}
+        trigger={null}
+        theme="light"
+        collapsible
+        collapsed={!store.isSmallDevice && store.sidebarCollapsed}
+        collapsedWidth={64}
+    >
+        {store.isSmallDevice && <Button
+            type="text"
+            icon={<MenuFoldOutlined />}
+            onClick={() => store.sidebarCollapsed = !store.sidebarCollapsed}
+            style={{
+                fontSize: '16px',
+                width: 64,
+                height: 64,
+                position: "absolute",
+                top: 0,
+                right: 0,
+            }}
+        />}
+
         <div className="logo-sidebar">
             <div className="logo-icon" />
             <div className="logo-logotype">
@@ -97,44 +122,11 @@ const MenuBarContent = observer(() => {
                 <div className="logo-subtitle">Home Inventory Management</div>
             </div>
         </div>
+
         <AppMenu />
+
         <div style={{ flexGrow: 1 }} />
-    </>
-});
-
-const MenuBar = observer(() => {
-    const store = useContext(AppStore.Context);
-
-    if (store.isSmallDevice) {
-        return <Drawer
-            className="main-sidebar"
-            closable={false}
-            open={store.isSmallDevice && !store.sidebarCollapsed}
-            onClose={action(() => {
-                store.sidebarCollapsed = true;
-            })}
-            placement="left"
-            size={200}
-            styles={{
-                body: {
-                    background: "#141414",
-                    padding: 0,
-                }
-            }}
-        >
-            <MenuBarContent />
-        </Drawer>
-    } else {
-        return <Sider
-            className="main-sidebar"
-            trigger={null}
-            theme="light"
-            collapsible
-            collapsed={store.isSmallDevice || store.sidebarCollapsed}
-        >
-            <MenuBarContent />
-        </Sider>
-    }
+    </Layout.Sider>
 });
 
 const InnerLayout = observer((props: { children?: React.ReactNode }) => {
@@ -147,7 +139,7 @@ const InnerLayout = observer((props: { children?: React.ReactNode }) => {
     return <Layout style={{ height: "100vh" }}>
         <MenuBar />
         <Layout>
-            <Header style={{ padding: 0, background: colorBgContainer, display: "flex" }}>
+            <Layout.Header style={{ padding: 0, background: colorBgContainer, display: "flex" }}>
                 <Button
                     type="text"
                     icon={store.sidebarCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -168,8 +160,8 @@ const InnerLayout = observer((props: { children?: React.ReactNode }) => {
                         <MdBarcodeReader />
                     </Button>
                 </Flex>
-            </Header>
-            <Content
+            </Layout.Header>
+            <Layout.Content
                 style={{
                     margin: '24px 16px',
                     padding: 24,
@@ -179,36 +171,38 @@ const InnerLayout = observer((props: { children?: React.ReactNode }) => {
                 }}
             >
                 {props.children}
-            </Content>
+            </Layout.Content>
         </Layout>
     </Layout>
 });
 
+const THEME: ThemeConfig = {
+    algorithm: theme.darkAlgorithm,
+    token: {
+        colorPrimary: 'rgba(196, 171, 45, 1)',
+    },
+    components: {
+        Layout: {
+            // siderBg: "#333",
+        },
+        Menu: {
+            // darkItemBg: "#333",
+            // darkSubMenuItemBg: "#222",
+            // darkItemHoverBg: "red",
+            // darkItemSelectedBg: "red",
+            activeBarBorderWidth: 0,
+        },
+    },
+};
+
 export const AppLayout = observer((props: { children?: React.ReactNode }) => {
     return <>
         <ConfigProvider
-            theme={{
-                algorithm: theme.darkAlgorithm,
-                token: {
-                    // colorBgBase: "yellow",
-                    colorPrimary: 'rgba(196, 171, 45, 1)',
-                    // colorPrimaryBg: "red",
-                },
-                components: {
-                    Layout: {
-                        // siderBg: "#333",
-                        /* here is your component tokens */
-                    },
-                    Menu: {
-                        // darkItemBg: "#333",
-                        // darkSubMenuItemBg: "#222",
-                        // darkItemHoverBg: "red",
-                        // darkItemSelectedBg: "red",
-                    },
-                },
-            }}
+            theme={THEME}
         >
-            <InnerLayout {...props} />
+            <App>
+                <InnerLayout {...props} />
+            </App>
         </ConfigProvider>
     </>
 })

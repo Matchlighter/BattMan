@@ -69,6 +69,7 @@ const RAW_RUNTIME_STATE =
           ["babel-loader", "virtual:0460f86c7587ee75dac643681550c044e8047ba46e219a5baac054fc0fea2d0af97a9bd3fe4b22de0884797215e0a1a4368bb60f9ef7087a69c4008789f4e032#npm:8.4.1"],\
           ["babel-plugin-macros", "npm:3.1.0"],\
           ["babel-plugin-transform-react-remove-prop-types", "npm:0.4.24"],\
+          ["classnames", "npm:2.5.1"],\
           ["compression-webpack-plugin", "virtual:0460f86c7587ee75dac643681550c044e8047ba46e219a5baac054fc0fea2d0af97a9bd3fe4b22de0884797215e0a1a4368bb60f9ef7087a69c4008789f4e032#npm:11.1.0"],\
           ["css-loader", "virtual:0460f86c7587ee75dac643681550c044e8047ba46e219a5baac054fc0fea2d0af97a9bd3fe4b22de0884797215e0a1a4368bb60f9ef7087a69c4008789f4e032#npm:7.1.2"],\
           ["css-minimizer-webpack-plugin", "virtual:0460f86c7587ee75dac643681550c044e8047ba46e219a5baac054fc0fea2d0af97a9bd3fe4b22de0884797215e0a1a4368bb60f9ef7087a69c4008789f4e032#npm:7.0.4"],\
@@ -7836,6 +7837,7 @@ const RAW_RUNTIME_STATE =
           ["babel-loader", "virtual:0460f86c7587ee75dac643681550c044e8047ba46e219a5baac054fc0fea2d0af97a9bd3fe4b22de0884797215e0a1a4368bb60f9ef7087a69c4008789f4e032#npm:8.4.1"],\
           ["babel-plugin-macros", "npm:3.1.0"],\
           ["babel-plugin-transform-react-remove-prop-types", "npm:0.4.24"],\
+          ["classnames", "npm:2.5.1"],\
           ["compression-webpack-plugin", "virtual:0460f86c7587ee75dac643681550c044e8047ba46e219a5baac054fc0fea2d0af97a9bd3fe4b22de0884797215e0a1a4368bb60f9ef7087a69c4008789f4e032#npm:11.1.0"],\
           ["css-loader", "virtual:0460f86c7587ee75dac643681550c044e8047ba46e219a5baac054fc0fea2d0af97a9bd3fe4b22de0884797215e0a1a4368bb60f9ef7087a69c4008789f4e032#npm:7.1.2"],\
           ["css-minimizer-webpack-plugin", "virtual:0460f86c7587ee75dac643681550c044e8047ba46e219a5baac054fc0fea2d0af97a9bd3fe4b22de0884797215e0a1a4368bb60f9ef7087a69c4008789f4e032#npm:7.0.4"],\

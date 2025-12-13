@@ -1,4 +1,4 @@
-import { action, computed, observable } from "mobx";
+import { action, computed, observable, reaction } from "mobx";
 import React from "react";
 
 export class AppStore {
@@ -9,14 +9,17 @@ export class AppStore {
             this.refreshWindowHeight();
         }));
         this.refreshWindowHeight();
+
+        reaction(() => this.isSmallDevice, (isSmallDevice) => {
+            this.sidebarCollapsed = isSmallDevice;
+        }, { fireImmediately: true });
     }
 
     @observable accessor sidebarCollapsed = false;
     @observable accessor isSmallDevice = false;
 
     @action refreshWindowHeight() {
-        this.isSmallDevice = window.innerWidth < 500;
-        this.sidebarCollapsed = this.isSmallDevice;
+        this.isSmallDevice = window.innerWidth < 550;
     }
 
     @computed get isCompactNavBar() {
