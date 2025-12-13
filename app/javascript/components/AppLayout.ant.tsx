@@ -17,8 +17,10 @@ import type { ItemType, MenuItemType } from "antd/es/menu/interface";
 
 import { dft } from "@matchlighter/common_library/data/traversal";
 
-import { AppStore } from "@/data/app_store";
 import "./screen.ant.less";
+
+import { AppStore } from "@/data/app_store";
+import { LinkScannerButton } from "./LinkScannerButton";
 
 const MENU_ITEMS: ItemType<MenuItemType>[] = [
     {
@@ -168,9 +170,7 @@ const InnerLayout = observer((props: { children?: React.ReactNode }) => {
                         <Button title="Scan with camera">
                             <MdOutlineCameraAlt />
                         </Button>
-                        <Button title="Link barcode scanner">
-                            <MdBarcodeReader />
-                        </Button>
+                        {!store.isSmallDevice && <LinkScannerButton />}
                     </div>
                 </Flex>
 

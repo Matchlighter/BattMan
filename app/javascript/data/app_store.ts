@@ -18,6 +18,10 @@ export class AppStore {
         }, { fireImmediately: true });
     }
 
+    client_uid: string;
+
+    @observable accessor paired_scanner_id: string;
+
     ant: useAppProps;
 
     @observable accessor sidebarCollapsed = false;
