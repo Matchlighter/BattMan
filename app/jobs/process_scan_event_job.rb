@@ -1,8 +1,6 @@
 class ProcessScanEventJob < ApplicationJob
   queue_as :default
 
-  class ScanError < StandardError; end
-
   attr_reader :scanner
   attr_reader :scan_log
 

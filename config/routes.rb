@@ -16,6 +16,8 @@ Rails.application.routes.draw do
 
   namespace :api, defaults: { format: :json } do
     namespace :v1 do
+      get :lookup_upc, to: "ext_data#lookup_upc_code"
+
       scope "/thing/:id", controller: :things do
         get "/", action: :show
       end
@@ -24,10 +26,10 @@ Rails.application.routes.draw do
         post "/search", action: :index
       end
     end
-    # get "*", to: "api#not_found"
+    get "*", to: "api#not_found"
   end
 
   scope :constraints => { :format => 'html' } do
-    # get "*path", to: "ui#index"
+    get "*path", to: "ui#index"
   end
 end

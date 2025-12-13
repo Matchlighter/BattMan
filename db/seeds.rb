@@ -48,6 +48,14 @@ define_template("Item",
   "maintenance-schedule" => {},
 )
 
+# Define a "Class" of Item that you may have multiple instances/copies of
+#   eg You might have 3 of the same model of TV.
+#     Each was bought on a different date, has a different S/N, etc.
+#     But they all have the same manual, warranty terms, etc.
+define_template("Product",
+  "product",
+)
+
 define_template("Appliance",
   "warranty" => {},
   "manual" => {},

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_11_185146) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_12_183207) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -42,6 +42,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_11_185146) do
 
   create_table "scanners", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.jsonb "scan_hook"
     t.jsonb "state", default: {}
     t.datetime "updated_at", null: false
   end
