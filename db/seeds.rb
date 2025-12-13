@@ -14,10 +14,10 @@ def tag_type(type, **options)
   end
 end
 
-tag_type "template", type: :boolean, inheritable: false
-tag_type "builtin", type: :boolean, inheritable: false
-tag_type "can-belong-to", type: "string[]"
-tag_type "belongs-to", type: :reference, inheritable: false
+tag_type "template", typing: :boolean, inheritable: false
+tag_type "builtin", typing: :boolean, inheritable: false
+tag_type "can-belong-to", typing: "string[]"
+tag_type "belongs-to", typing: :reference, inheritable: false
 
 def define_template(type, *tags)
   tags << "template"
@@ -64,3 +64,5 @@ define_template("Battery",
   "can-belong-to" => ["uses-batteries"],
   "last-charged" => {}
 )
+
+Thing.roots.each(&:refresh_tag_cache!)

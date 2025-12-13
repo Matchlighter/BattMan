@@ -42,16 +42,15 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_11_185146) do
 
   create_table "scanners", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.json "state", default: {}
+    t.jsonb "state", default: {}
     t.datetime "updated_at", null: false
   end
 
-  create_table "tag_types", force: :cascade do |t|
+  create_table "tag_types", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "default"
     t.boolean "inheritable"
-    t.string "key"
-    t.string "type"
+    t.string "typing"
     t.datetime "updated_at", null: false
   end
 

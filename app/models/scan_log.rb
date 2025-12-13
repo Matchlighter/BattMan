@@ -1,5 +1,4 @@
 class ScanLog < ApplicationRecord
-  belongs_to :object, polymorphic: true, optional: true
   belongs_to :scanner
 
   def self.process_scan!(scanner, payload)
@@ -16,8 +15,21 @@ class ScanLog < ApplicationRecord
     end
 
     changes = log_entry.changes
-    # TODO Broadcast changed items
-    # TODO Broadcast ScanLog to those watching the Scanner
+
+    # Broadcast changed items
+    changes.each do |change|
+      ThingChannel.broadcast_to(change.item, ApplicationController.render(
+        template: 'api/v1/things/show',
+        assigns: { thing: change.item },
+      ))
+    end
+
+    # Broadcast ScanLog to those watching the Scanner
+    ScannerChannel.broadcast_to(scanner, {
+      type: "scan",
+      scan_log_id: log_entry.id,
+      changes: changes,
+    })
   rescue StandardError => err
     log_entry.update!(
       status: "error",

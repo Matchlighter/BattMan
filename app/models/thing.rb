@@ -64,6 +64,11 @@ class Thing < ApplicationRecord
     Thing.where2(own_tags: { "implements__contains" => [id] })
   end
 
+  def tags
+    # TODO Compute live if the cache is stale
+    attributes["tags"]
+  end
+
   protected
 
   def _refresh_tag_cache_work(parent_cache: {})

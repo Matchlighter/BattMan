@@ -14,6 +14,20 @@ Rails.application.routes.draw do
 
   root :to => redirect('/batteries')
 
-  resources :batteries
-  resources :devices
+  namespace :api, defaults: { format: :json } do
+    namespace :v1 do
+      scope "/thing/:id", controller: :things do
+        get "/", action: :show
+      end
+      scope "/things", controller: :things do
+        get "/", action: :index
+        post "/search", action: :index
+      end
+    end
+    # get "*", to: "api#not_found"
+  end
+
+  scope :constraints => { :format => 'html' } do
+    # get "*path", to: "ui#index"
+  end
 end
