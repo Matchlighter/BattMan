@@ -12,10 +12,15 @@ if defined?(::Rails::Server)
   $mqtt_client = MQTT::Client.connect(mqtt_url, client_id: client_id)
 
   Thread.new do
-    puts "Starting MQTT listener on topic #{topic}"
-    $mqtt_client.get(topic) do |topic,message|
-      message = message.gsub(/[\r]/, "")
-      ProcessScanEventJob.perform_later(message)
+    loop do
+      puts "Starting MQTT listener on topic #{topic}"
+      $mqtt_client.get(topic) do |topic,message|
+        message = message.gsub(/[\r]/, "")
+        ProcessScanEventJob.perform_later(message)
+      end
+    rescue StandardError => err
+      Rails.logger.error("MQTT listener error: #{err.message}: \n #{err.backtrace.join("\n")}")
+      sleep 1
     end
   end
 end

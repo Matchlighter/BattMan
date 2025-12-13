@@ -8,6 +8,8 @@ POSTGRES_PASSWORD="${DB_PASSWORD:-battman_dev}"
 POSTGRES_DB="battman_development"
 POSTGRES_PORT="${DB_PORT:-5432}"
 
+mkdir -p tmp/postgres-data
+
 # Check if container already exists
 if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
   # Container exists, check if it's running
@@ -27,6 +29,7 @@ else
   docker run -d \
     --name "${CONTAINER_NAME}" \
     --network=host \
+    --user "$(id -u):$(id -g)" \
     -e POSTGRES_USER="${POSTGRES_USER}" \
     -e POSTGRES_PASSWORD="${POSTGRES_PASSWORD}" \
     -e POSTGRES_DB="${POSTGRES_DB}" \
