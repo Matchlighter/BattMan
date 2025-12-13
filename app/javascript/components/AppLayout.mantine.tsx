@@ -1,0 +1,198 @@
+import { observer } from "mobx-react";
+import { ComponentProps, useContext } from "react";
+import { Link, useHistory, useLocation } from "react-router-dom";
+
+import { ActionIcon, AppShell, Box, Burger, Group, Menu, NavLink, ScrollArea, Text, Tooltip, UnstyledButton } from "@mantine/core";
+import type { ItemType, MenuItemType } from "antd/es/menu/interface";
+import { MdDevices, MdLocationPin, MdMicrowave, MdOutlineAccountTree, MdSettings, MdShoppingCart, MdSpaceDashboard } from "react-icons/md";
+
+import { dft } from "@matchlighter/common_library/data/traversal";
+
+import { AppStore } from "@/data/app_store";
+
+const MENU_ITEMS: ItemType<MenuItemType>[] = [
+    {
+        key: '/locations',
+        icon: <MdLocationPin />,
+        label: 'Locations',
+    },
+    {
+        key: '/items',
+        icon: <MdOutlineAccountTree />,
+        label: 'Items',
+        children: [
+            {
+                key: '/items/devices',
+                icon: <MdDevices />,
+                label: 'Devices',
+            },
+            {
+                key: '/items/appliances',
+                icon: <MdMicrowave />,
+                label: 'Appliances',
+            },
+        ]
+    },
+    {
+        key: '/products',
+        icon: <MdShoppingCart />,
+        label: 'Products',
+    },
+    {
+        key: '/templates',
+        icon: <MdSpaceDashboard />,
+        label: 'Templates',
+    },
+    {
+        key: '/settings',
+        icon: <MdSettings />,
+        label: 'Settings',
+    },
+];
+
+const ALL_KEYS: string[] = [];
+dft(MENU_ITEMS, (node) => {
+    ALL_KEYS.push(node.key as string);
+    return node.children || [];
+});
+
+function MenuLinkItem({ link }: { link: ItemType<MenuItemType> }) {
+    if (link.children) {
+        return <Menu.Sub openDelay={120} closeDelay={150}>
+            <Menu.Sub.Target>
+                <Menu.Sub.Item leftSection={link.icon}>{link.label}</Menu.Sub.Item>
+            </Menu.Sub.Target>
+
+            <Menu.Sub.Dropdown>
+                {link.children.map(child => <MenuLinkItem key={child.key} link={child} />)}
+            </Menu.Sub.Dropdown>
+        </Menu.Sub>
+    } else {
+        return <Menu.Item
+            component={Link}
+            leftSection={link.icon}
+            to={link.key}
+
+        >{link.label}</Menu.Item>
+    }
+}
+
+function CompactNavLinks(props: { links: ItemType<MenuItemType>[] }) {
+    const location = useLocation();
+
+    const link_components = props.links.map(link => {
+        const is_current = location.pathname.startsWith(link.key as string);
+
+        const nav_props = {
+            href: "#",
+        }
+
+        if (!link.children) {
+            Object.assign(nav_props, {
+                component: Link,
+                href: link.key,
+                to: link.key,
+            });
+        }
+
+        let component = <NavLink
+            active={is_current}
+            variant="subtle"
+            label={<span style={{ fontSize: "1.3rem" }}>{link.icon}</span>}
+            {...nav_props}
+        />
+
+        if (link.children) {
+            component = <Menu key={link.key} position="right-start" trigger="hover">
+                <Menu.Target>
+                    {component}
+                </Menu.Target>
+                <Menu.Dropdown>
+                    {link.children.map(child => <MenuLinkItem key={child.key} link={child} />)}
+                </Menu.Dropdown>
+            </Menu>
+        } else {
+            component = <Tooltip key={link.key} label={link.label} position="right" transitionProps={{ duration: 0 }}>
+                {component}
+            </Tooltip>
+        }
+
+        return component;
+    });
+    return <>{link_components}</>;
+}
+
+function NavLinks(props: { links: ItemType<MenuItemType>[] }) {
+    const location = useLocation();
+
+    const link_components = props.links.map(link => {
+        const is_current = location.pathname.startsWith(link.key as string);
+
+        return <NavLink
+            key={link.key}
+            href={link.key}
+            to={link.key}
+            active={is_current}
+            variant="subtle"
+            label={link.label}
+            leftSection={link.icon}
+            defaultOpened={is_current}
+            component={Link}
+            childrenOffset="sm"
+        >
+            {link.children && <NavLinks links={link.children} />}
+        </NavLink>
+    });
+    return <>{link_components}</>;
+}
+
+export const AppLayout = observer((props: { children?: React.ReactNode }) => {
+    const store = useContext(AppStore.Context);
+
+    const collapsed = store.sidebarCollapsed;
+    const toggle = () => { store.sidebarCollapsed = !store.sidebarCollapsed; }
+
+    return <>
+        <AppShell
+            layout="alt"
+            header={{ height: 64 }}
+            footer={{ height: 60 }}
+            navbar={{ width: collapsed ? 64 : 220, breakpoint: 'sm', collapsed: { mobile: collapsed, desktop: false } }}
+            padding="md"
+        >
+            <AppShell.Header>
+                <Group h="100%" px="md">
+                    <Burger opened={!collapsed} onClick={toggle} size="sm" />
+                    Header
+                </Group>
+            </AppShell.Header>
+
+            <AppShell.Navbar className={(collapsed && !store.isSmallDevice) ? "navbar-icons-only" : ""}>
+                <Group p="md">
+                    <Burger opened={!collapsed} onClick={toggle} hiddenFrom="sm" size="sm" />
+                    <div className="logo-sidebar">
+                        <div className="logo-icon" />
+                        <div className="logo-logotype">
+                            <div title="Now for more than just batteries!" className="logo-title">BattMan</div>
+                            <div className="logo-subtitle">Home Inventory Management</div>
+                        </div>
+                    </div>
+                </Group>
+                <ScrollArea type="never">
+                    <Box hidden={store.isCompactNavBar}>
+                        <NavLinks links={MENU_ITEMS} />
+                    </Box>
+                    <Box hidden={!store.isCompactNavBar} p="6px">
+                        <CompactNavLinks links={MENU_ITEMS} />
+                    </Box>
+                </ScrollArea>
+            </AppShell.Navbar>
+
+            <AppShell.Main>
+                <Text>This is the main section, your app content here.</Text>
+                <Text>Alt layout demo – navbar and aside go all the way from top to bottom.</Text>
+            </AppShell.Main>
+            <AppShell.Footer p="md">Footer</AppShell.Footer>
+        </AppShell>
+    </>
+})
