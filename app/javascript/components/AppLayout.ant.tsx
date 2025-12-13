@@ -145,20 +145,26 @@ const InnerLayout = observer((props: { children?: React.ReactNode }) => {
                     icon={store.sidebarCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
                     onClick={() => store.sidebarCollapsed = !store.sidebarCollapsed}
                     style={{
+                        // position: "absolute",
                         fontSize: '16px',
                         width: 64,
                         height: 64,
                     }}
                 />
-                <div style={{ flexGrow: 1 }} />
-                <Flex align="center" gap="small" style={{ padding: "10px", width: "30%", maxWidth: "400px", flex: 1, minWidth: "250px" }}>
-                    <Input.Search style={{}} placeholder="Search..." variant="underlined" />
-                    <Button title="Scan with camera">
-                        <MdOutlineCameraAlt />
-                    </Button>
-                    <Button title="Link barcode scanner">
-                        <MdBarcodeReader />
-                    </Button>
+                <Flex align="center" wrap="wrap-reverse" gap="small" style={{ justifyContent: "end", padding: "10px", flex: 1, }}>
+                    <div style={{ lineHeight: 0, display: "flex", gap: "8px", flex: 1, justifyContent: "end", }}>
+                        <Input.Search
+                            style={{ maxWidth: "300px", minWidth: "200px", flex: 1 }}
+                            variant="underlined"
+                            placeholder="Search..."
+                        />
+                        <Button title="Scan with camera">
+                            <MdOutlineCameraAlt />
+                        </Button>
+                        <Button title="Link barcode scanner">
+                            <MdBarcodeReader />
+                        </Button>
+                    </div>
                 </Flex>
             </Layout.Header>
             <Layout.Content
