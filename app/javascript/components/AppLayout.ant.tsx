@@ -1,6 +1,6 @@
 import cnames from "classnames";
 import { observer } from "mobx-react";
-import { ComponentProps, useContext } from "react";
+import { ComponentProps, HTMLProps, useContext } from "react";
 import { useHistory, useLocation } from "react-router";
 
 import { MdBarcodeReader, MdDevices, MdLocationPin, MdMicrowave, MdOutlineCameraAlt, MdShoppingCart } from "react-icons/md";
@@ -132,6 +132,9 @@ const MenuBar = observer(() => {
 const InnerLayout = observer((props: { children?: React.ReactNode }) => {
     const store = useContext(AppStore.Context);
 
+    const ant_app = App.useApp();
+    store.ant = ant_app;
+
     const {
         token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
@@ -180,25 +183,33 @@ const InnerLayout = observer((props: { children?: React.ReactNode }) => {
                     />
                 </div>}
             </Layout.Header>
-            <Layout.Content
-                style={{
-                    margin: '24px 16px',
-                    padding: 24,
-                    minHeight: 280,
-                    background: colorBgContainer,
-                    borderRadius: borderRadiusLG,
-                }}
-            >
+            <Layout.Content style={{ padding: "24px" }}>
                 {props.children}
             </Layout.Content>
         </Layout>
     </Layout>
 });
 
+export const Box = (props: HTMLProps<HTMLDivElement>) => {
+    const {
+        token: { colorBgContainer, borderRadiusLG },
+    } = theme.useToken();
+    return <div
+        {...props}
+        style={{
+            padding: 24,
+            background: colorBgContainer,
+            borderRadius: borderRadiusLG,
+            ...(props.style || {}),
+        }}
+    />;
+}
+
 const THEME: ThemeConfig = {
     algorithm: theme.darkAlgorithm,
     token: {
         colorPrimary: 'rgba(196, 171, 45, 1)',
+        // borderRadius: 0,
     },
     components: {
         Layout: {

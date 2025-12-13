@@ -1,8 +1,11 @@
+import type { useAppProps } from "antd/es/app/context";
 import { action, computed, observable, reaction } from "mobx";
 import React from "react";
 
 export class AppStore {
     static Context = React.createContext(new AppStore());
+
+    static instance = new AppStore();
 
     constructor() {
         window.addEventListener("resize", action(() => {
@@ -14,6 +17,8 @@ export class AppStore {
             this.sidebarCollapsed = isSmallDevice;
         }, { fireImmediately: true });
     }
+
+    ant: useAppProps;
 
     @observable accessor sidebarCollapsed = false;
     @observable accessor isSmallDevice = false;
