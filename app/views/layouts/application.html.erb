@@ -18,7 +18,9 @@
     <link rel="icon" href="/logo.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.4/dist/semantic.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
 
     <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
 
@@ -29,22 +31,6 @@
   </head>
 
   <body>
-    <div class="ui fixed inverted menu">
-      <div class="ui container">
-        <a href="#" class="header item">
-          <div class="logo"></div>
-          BattMan
-        </a>
-
-        <%= menu_item "Batteries", batteries_path %>
-        <%= menu_item "Devices", devices_path %>
-      </div>
-    </div>
-
-    <div class="ui main container">
-      <%= yield %>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.4/dist/semantic.min.js"></script>
+    <%= yield %>
   </body>
 </html>
