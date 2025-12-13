@@ -4,8 +4,10 @@ source "https://rubygems.org"
 gem "rails", "~> 8.1.1"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 # gem "propshaft"
-# Use sqlite3 as the database for Active Record
-gem "sqlite3", ">= 2.1"
+
+# Use PostgreSQL as the database for Active Record
+gem "pg", "~> 1.6"
+
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
@@ -60,24 +62,20 @@ group :test do
 end
 
 gem "shakapacker", "~> 9.4"
+# gem "react-rails", "~> 3.2"
+gem "react_on_rails", "= 16.1"
 
-gem "react-rails", "~> 3.2"
-
+gem "activerecord-import", "~> 2.2"
+gem "where_exists", "~> 3.2"
 gem "paper_trail", "~> 17.0"
 gem 'paper_trail-globalid'
+gem "goldiloader", "~> 6.0"
 
 gem "mqtt", "~> 0.7.0"
 
-gem "goldiloader", "~> 6.0"
-
 gem "local_time", "~> 3.0"
-
-gem "turbo-rails", "~> 2.0"
-
-gem "pg", "~> 1.6"
 
 gem "miscellany", "~> 0.1.31"
 
-gem "activerecord-import", "~> 2.2"
 
-gem "where_exists", "~> 3.2"
+gem "foreman", "~> 0.90.0"

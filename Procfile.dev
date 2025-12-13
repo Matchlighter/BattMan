@@ -1,2 +1,5 @@
-web: bin/rails server
-shakapacker: bin/shakapacker-dev-server
+# Procfile for development using HMR
+# You can run these commands in separate shells
+rails: bundle exec rails s -p 4000
+wp-client: WEBPACK_SERVE=true bin/shakapacker-dev-server
+wp-server: SERVER_BUNDLE_ONLY=yes bin/shakapacker --watch

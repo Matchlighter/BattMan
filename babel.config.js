@@ -1,45 +1,38 @@
+// The source code including full typescript support is available at: 
+// https://github.com/shakacode/react_on_rails_demo_ssr_hmr/blob/master/babel.config.js
 
-const { moduleExists } = require('shakapacker')
-
-module.exports = function config(api) {
-  const validEnv = ['development', 'test', 'production']
-  const currentEnv = api.env()
-  const isDevelopmentEnv = api.env('development')
+module.exports = function (api) {
+  const defaultConfigFunc = require('shakapacker/package/babel/preset.js')
+  const resultConfig = defaultConfigFunc(api)
   const isProductionEnv = api.env('production')
-  const isTestEnv = api.env('test')
 
-  if (!validEnv.includes(currentEnv)) {
-    throw new Error(
-      `Please specify a valid NODE_ENV or BABEL_ENV environment variable. Valid values are "development", "test", and "production". Instead, received: "${JSON.stringify(
-        currentEnv
-      )}".`
-    )
-  }
-
-  return {
+  const changesOnDefault = {
     presets: [
-      isTestEnv && ['@babel/preset-env', { targets: { node: 'current' } }],
-      (isProductionEnv || isDevelopmentEnv) && [
-        '@babel/preset-env',
-        {
-          useBuiltIns: 'entry',
-          corejs: '3.8',
-          modules: 'auto',
-          bugfixes: true,
-          exclude: ['transform-typeof-symbol']
-        }
-      ],
-      moduleExists('@babel/preset-react') && [
+      [
         '@babel/preset-react',
-      ],
-      moduleExists('@babel/preset-typescript') && [
-        '@babel/preset-typescript',
-        { allExtensions: true, isTSX: true }
+        {
+          development: !isProductionEnv,
+          useBuiltIns: true,
+          runtime: 'automatic'
+        }
       ]
     ].filter(Boolean),
     plugins: [
       ["@babel/plugin-proposal-decorators", { "version": "2023-11" }],
-      isDevelopmentEnv && moduleExists('react-refresh/babel') && 'react-refresh/babel',
-    ].filter(Boolean)
+
+      // Enable React Refresh (Fast Refresh) only when webpack-dev-server is running (HMR mode)
+      // This prevents React Refresh from trying to connect when using static compilation
+      !isProductionEnv && process.env.WEBPACK_SERVE && 'react-refresh/babel',
+      isProductionEnv && ['babel-plugin-transform-react-remove-prop-types',
+        {
+          removeImport: true
+        }
+      ]
+    ].filter(Boolean),
   }
+
+  resultConfig.presets = [...resultConfig.presets, ...changesOnDefault.presets]
+  resultConfig.plugins = [...resultConfig.plugins, ...changesOnDefault.plugins ]
+
+  return resultConfig
 }

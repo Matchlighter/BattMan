@@ -1,13 +1,22 @@
-
+const { existsSync } = require('fs')
+const { resolve } = require('path')
 const path = require("path")
 const webpack = require("webpack")
-const { generateWebpackConfig, merge, env } = require('shakapacker')
+const { merge, env } = require('shakapacker')
 
-const webpackConfig = generateWebpackConfig()
+const envSpecificConfig = () => {
+  const path = resolve(__dirname, `${env.nodeEnv}.js`)
+  if (existsSync(path)) {
+    console.log(`Loading ENV specific webpack configuration file ${path}`)
+    return require(path)
+  } else {
+    throw new Error(`Could not find file to load ${path}, based on NODE_ENV`)
+  }
+}
 
 const JSROOT = path.resolve(__dirname, '../..', 'app/javascript');
 
-module.exports = merge(webpackConfig, {
+module.exports = merge(envSpecificConfig(), {
     performance: {
         hints: false,
     },
