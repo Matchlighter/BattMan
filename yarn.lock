@@ -3756,6 +3756,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/rails__actioncable@npm:^8.0.3":
+  version: 8.0.3
+  resolution: "@types/rails__actioncable@npm:8.0.3"
+  checksum: 10c0/088ed3180b4b7544c246f654d52ab9b8d27f35f0c015e959f1d702eb3703276339f9646fb2f0b752debf33218affb826dd2cae5ebe48e92b994e68ec03eecdc1
+  languageName: node
+  linkType: hard
+
 "@types/range-parser@npm:*":
   version: 1.2.7
   resolution: "@types/range-parser@npm:1.2.7"
@@ -4558,6 +4565,7 @@ __metadata:
     "@rails/actioncable": "npm:^8.0.300"
     "@types/babel-plugin-macros": "npm:^3"
     "@types/prop-types": "npm:^15"
+    "@types/rails__actioncable": "npm:^8.0.3"
     "@types/react": "npm:^19.1.12"
     "@types/react-dom": "npm:^19"
     "@types/react-router": "npm:^5.1.4"

@@ -2,9 +2,44 @@ class ScanLog < ApplicationRecord
   belongs_to :scanner
 
   def self.process_scan!(scanner, payload)
-    log_entry = create!(scanner: scanner)
+    log_entry = create!(scanner: scanner, payload: payload, status: "ok")
     PaperTrail.request.whodunnit = log_entry
+    log_entry.process_scan!(payload)
+  end
 
+  def process_scan!(payload)
+    if payload.match?(/^https?:\/\//)
+      raise ScanError, "URL Scanned"
+    else
+      process_linking_scan!(payload)
+    end
+
+  rescue StandardError => err
+    update!(
+      status: "error",
+      message: err.message,
+    )
+
+    raise err
+  ensure
+    # Broadcast ScanLog to those watching the Scanner
+    ScannerChannel.broadcast_to(scanner, {
+      type: "scan",
+      scan_log_id: self.id,
+      status: status,
+      message: message,
+      payload: payload,
+      # changes: changes,
+    })
+  end
+
+  def changes
+    PaperTrail::Version.where(whodunnit: to_gid)
+  end
+
+  protected
+
+  def process_linking_scan!(payload)
     transaction do
       # TODO Process payload and apply changes
       #   Load scanned object
@@ -14,8 +49,6 @@ class ScanLog < ApplicationRecord
       #   Update context to include the scanned object
     end
 
-    changes = log_entry.changes
-
     # Broadcast changed items
     changes.each do |change|
       ThingChannel.broadcast_to(change.item, ApplicationController.render(
@@ -23,23 +56,5 @@ class ScanLog < ApplicationRecord
         assigns: { thing: change.item },
       ))
     end
-
-    # Broadcast ScanLog to those watching the Scanner
-    ScannerChannel.broadcast_to(scanner, {
-      type: "scan",
-      scan_log_id: log_entry.id,
-      changes: changes,
-    })
-  rescue StandardError => err
-    log_entry.update!(
-      status: "error",
-      message: err.message,
-    )
-
-    raise err
-  end
-
-  def changes
-    PaperTrail::Version.where(whodunnit: to_gid)
   end
 end

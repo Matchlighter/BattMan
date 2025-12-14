@@ -170,7 +170,7 @@ const InnerLayout = observer((props: { children?: React.ReactNode }) => {
                         <Button title="Scan with camera">
                             <MdOutlineCameraAlt />
                         </Button>
-                        {!store.isSmallDevice && <LinkScannerButton />}
+                        <LinkScannerButton />
                     </div>
                 </Flex>
 

@@ -2,20 +2,21 @@ class Scanner < ApplicationRecord
   class ScanError < StandardError; end
 
   def self.process_scan_event!(scanner_id, payload)
-    scanner = Scanner.find(scanner_id)
+    scanner = Scanner.find_or_create_by(id: scanner_id)
 
     if (m = /^BATTMAN:(.*)$/.match(payload))
       meta = m[1]
 
       # Tell the client Channel to subscribe to the scanner
-      if meta.start_with?("CLIENT:")
-        client_uid = meta.split(":")[1]
+      if (m = /^CLIENT:(\w+):(.*)$/.match(meta))
+        client_uid = m[1]
         ClientChannel.broadcast_to(client_uid, {
-          type: "watch_scanner",
+          type: "client_scanned",
           scanner_id: scanner.id,
+          payload: m[2],
         })
       end
-    elsif (client_uid = scanner.scan_hook).present?
+    elsif scanner && (client_uid = scanner.scan_hook).present?
       ClientChannel.broadcast_to(client_uid, {
         type: "scan",
         scanner_id: scanner.id,
@@ -34,7 +35,7 @@ class Scanner < ApplicationRecord
 
   def scan_hook
     h = attributes["scan_hook"]
-    return unless h && h["exp"] < Time.now.to_i
+    return unless h && h["exp"] > Time.now.to_i
     h["ch"]
   end
 
@@ -43,7 +44,7 @@ class Scanner < ApplicationRecord
   end
 
   def release_scan_hook(channel)
-    Scanner.where(id: id, "scan_hook->>'ch'" => channel).update_all(scan_hook: nil)
+    Scanner.where2(id: id, scan_hook: { ch: channel }).update_all(scan_hook: nil)
   end
 
   class Handler

@@ -12,44 +12,7 @@ class ProcessScanEventJob < ApplicationJob
     payload = message["msg"]
     puts "Scanner ID: #{scanner_id}, Payload: #{payload}"
 
-    @scanner = Scanner.find_or_initialize_by(id: scanner_id)
-    @scan_log = ScanLog.new(scanner: scanner, payload: payload)
-
-    PaperTrail.request.whodunnit = "scanner:#{scanner.id}"
-
-    case payload
-    when Device::PATTERN
-      process_device_scan(payload)
-    when Battery::PATTERN
-      process_battery_scan(payload)
-    else
-      raise ScanError, "Unknown payload format"
-    end
-
-    scanner.updated_at = Time.current
-    scanner.save
-
-    sleep(0.2)
-    scanner.beep!(1)
-  rescue ScanError => e
-    scan_log.status = "error"
-    scan_log.message = e.message
-
-    puts "ScanError: #{e.message}"
-    # TODO Broadcast to UI
-    sleep(0.2)
-    scanner.beep!(2)
-  rescue StandardError => e
-    if scan_log.present?
-      scan_log.status = "error"
-      scan_log.message = "Internal error processing scan: #{e.message}"
-    end
-
-    sleep(0.2)
-    scanner.beep!(3) if scanner
-    raise e
-  ensure
-    scan_log&.save!
+    Scanner.process_scan_event!(scanner_id, payload)
   end
 
   protected

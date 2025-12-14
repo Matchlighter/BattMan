@@ -85,6 +85,7 @@
     "@pmmmwh/react-refresh-webpack-plugin": "^0.6.2",
     "@types/babel-plugin-macros": "^3",
     "@types/prop-types": "^15",
+    "@types/rails__actioncable": "^8.0.3",
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19",
     "@types/semantic-ui": "^2.2.9",

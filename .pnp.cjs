@@ -58,6 +58,7 @@ const RAW_RUNTIME_STATE =
           ["@rails/actioncable", "npm:8.1.100"],\
           ["@types/babel-plugin-macros", "npm:3.1.3"],\
           ["@types/prop-types", "npm:15.7.15"],\
+          ["@types/rails__actioncable", "npm:8.0.3"],\
           ["@types/react", "npm:19.2.7"],\
           ["@types/react-dom", "virtual:0460f86c7587ee75dac643681550c044e8047ba46e219a5baac054fc0fea2d0af97a9bd3fe4b22de0884797215e0a1a4368bb60f9ef7087a69c4008789f4e032#npm:19.2.3"],\
           ["@types/react-router", "npm:5.1.20"],\
@@ -6818,6 +6819,15 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["@types/rails__actioncable", [\
+      ["npm:8.0.3", {\
+        "packageLocation": "../.yarn/berry/cache/@types-rails__actioncable-npm-8.0.3-c42089fe8c-10c0.zip/node_modules/@types/rails__actioncable/",\
+        "packageDependencies": [\
+          ["@types/rails__actioncable", "npm:8.0.3"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["@types/range-parser", [\
       ["npm:1.2.7", {\
         "packageLocation": "../.yarn/berry/cache/@types-range-parser-npm-1.2.7-a83c0b6429-10c0.zip/node_modules/@types/range-parser/",\
@@ -7826,6 +7836,7 @@ const RAW_RUNTIME_STATE =
           ["@rails/actioncable", "npm:8.1.100"],\
           ["@types/babel-plugin-macros", "npm:3.1.3"],\
           ["@types/prop-types", "npm:15.7.15"],\
+          ["@types/rails__actioncable", "npm:8.0.3"],\
           ["@types/react", "npm:19.2.7"],\
           ["@types/react-dom", "virtual:0460f86c7587ee75dac643681550c044e8047ba46e219a5baac054fc0fea2d0af97a9bd3fe4b22de0884797215e0a1a4368bb60f9ef7087a69c4008789f4e032#npm:19.2.3"],\
           ["@types/react-router", "npm:5.1.20"],\
