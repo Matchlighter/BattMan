@@ -26,11 +26,9 @@ class Scanner < ApplicationRecord
     else
       ScanLog.process_scan!(scanner, payload)
     end
-  end
-
-  def self.add_translator(&block)
-    handler = Handler.new
-    handler.instance_eval(&block)
+  rescue StandardError => err
+    puts("Error processing scan event for scanner #{scanner_id}: #{err.message}", err.backtrace)
+    raise err
   end
 
   def scan_hook
@@ -45,13 +43,5 @@ class Scanner < ApplicationRecord
 
   def release_scan_hook(channel)
     Scanner.where2(id: id, scan_hook: { ch: channel }).update_all(scan_hook: nil)
-  end
-
-  class Handler
-    def handle_http(subpath, &block)
-    end
-
-    def handle_mqtt(topic, &block)
-    end
   end
 end

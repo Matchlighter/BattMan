@@ -70,6 +70,7 @@ gem "where_exists", "~> 3.2"
 gem "paper_trail", "~> 17.0"
 gem 'paper_trail-globalid'
 gem "goldiloader", "~> 6.0"
+gem "activejob-perform_later", "~> 1.0"
 
 gem "mqtt", "~> 0.7.0"
 
@@ -77,5 +78,6 @@ gem "local_time", "~> 3.0"
 
 gem "miscellany", "~> 0.1.31"
 
-
 gem "foreman", "~> 0.90.0"
+gem "pry-rails", "~> 0.3.11"
+

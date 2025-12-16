@@ -1,6 +1,8 @@
 class ScanLog < ApplicationRecord
   belongs_to :scanner
 
+  ScanError = Scanner::ScanError
+
   def self.process_scan!(scanner, payload)
     log_entry = create!(scanner: scanner, payload: payload, status: "ok")
     PaperTrail.request.whodunnit = log_entry
@@ -34,7 +36,7 @@ class ScanLog < ApplicationRecord
   end
 
   def changes
-    PaperTrail::Version.where(whodunnit: to_gid)
+    PaperTrail::Version.where(whodunnit: to_gid.to_s)
   end
 
   protected
