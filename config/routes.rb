@@ -18,6 +18,14 @@ Rails.application.routes.draw do
     namespace :v1 do
       get :lookup_upc, to: "ext_data#lookup_upc_code"
 
+      scope "/scanner/:id", controller: :scanners do
+        get "/", action: :show
+      end
+      scope "/scanners", controller: :scanners do
+        get "/", action: :index
+        get "/known_models", action: :known_models
+      end
+
       scope "/thing/:id", controller: :things do
         get "/", action: :show
       end

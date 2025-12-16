@@ -5,16 +5,19 @@ import React from "react";
 
 import { CABLE, Message } from "@/cable";
 import { ScanHookStore } from "./scan_hooking";
+import { ClientCodesStore } from "./client_codes";
 
 export class AppStore {
     static instance = new AppStore();
     static Context = React.createContext(AppStore.instance);
 
     readonly uplink_channel: Subscription;
-
     readonly scan_hook_store = new ScanHookStore(this);
+    readonly client_codes_store = new ClientCodesStore();
 
     constructor() {
+        window["APPSTORE"] = this;
+
         window.addEventListener("resize", action(() => {
             this.refreshWindowHeight();
         }));
@@ -24,15 +27,17 @@ export class AppStore {
             this.sidebarCollapsed = isSmallDevice;
         }, { fireImmediately: true });
 
+        this.client_codes_store.registerClientCode("LINK", (rest: string) => {
+            this.linkScanner(rest);
+        });
+
         this.uplink_channel = CABLE.subscriptions.create({ channel: "ClientChannel" }, {
             assign_uid: (data: Message<{ uid: string }>) => {
                 this.client_uid = data.uid;
             },
             client_scanned: (data: Message<{ scanner_id: string; payload: string }>) => {
                 console.log(`Scanned from scanner ${data.scanner_id}: ${data.payload}`);
-                if (data.payload == "LINK") {
-                    this.linkScanner(data.scanner_id);
-                }
+                this.client_codes_store.handleCodeScanned(data.payload,data.scanner_id);
             },
             scan: (data: Message<{ payload: string, hooked: boolean }>) => {
                 if (data.hooked) {
@@ -54,6 +59,7 @@ export class AppStore {
     client_uid: string;
 
     @observable accessor paired_scanner_id: string;
+    @observable accessor follow_scans = false;
 
     ant: useAppProps;
 
@@ -90,6 +96,10 @@ export class AppStore {
                         });
                         return;
                     }
+                } else {
+                    if (this.follow_scans) {
+                        // TODO Navigate to relevant thing page
+                    }
                 }
             },
             received(data) {
@@ -100,7 +110,10 @@ export class AppStore {
                         console.error(`Unknown message type: ${data.type}`);
                     }
                 })
-            }
+            },
+            disconnected: action(() => {
+                this.unlinkScanner();
+            }),
         });
     }
 

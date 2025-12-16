@@ -3,15 +3,6 @@ import { observer } from "mobx-react";
 import { ComponentProps, HTMLProps, useContext } from "react";
 import { useHistory, useLocation } from "react-router";
 
-import { MdBarcodeReader, MdDevices, MdLocationPin, MdMicrowave, MdOutlineCameraAlt, MdShoppingCart } from "react-icons/md";
-
-import {
-    ClusterOutlined,
-    LayoutOutlined,
-    MenuFoldOutlined,
-    MenuUnfoldOutlined,
-    SettingOutlined
-} from '@ant-design/icons';
 import { App, Button, ConfigProvider, Flex, Input, Layout, Menu, theme, ThemeConfig } from 'antd';
 import type { ItemType, MenuItemType } from "antd/es/menu/interface";
 
@@ -20,44 +11,73 @@ import { dft } from "@matchlighter/common_library/data/traversal";
 import "./screen.ant.less";
 
 import { AppStore } from "@/data/app_store";
+import { Icon } from "./Icon";
 import { LinkScannerButton } from "./LinkScannerButton";
+import { UseBlock } from "@matchlighter/common_library/lib/components/Block";
 
 const MENU_ITEMS: ItemType<MenuItemType>[] = [
     {
         key: '/locations',
-        icon: <MdLocationPin />,
+        icon: <Icon icon="location_on" />,
         label: 'Locations',
     },
     {
         key: '/items',
-        icon: <ClusterOutlined />,
+        icon: <Icon icon="art_track" />,
         label: 'Items',
         children: [
             {
                 key: '/items/devices',
-                icon: <MdDevices />,
+                icon: <Icon icon="devices" />,
                 label: 'Devices',
             },
             {
                 key: '/items/appliances',
-                icon: <MdMicrowave />,
+                icon: <Icon icon="microwave" />,
                 label: 'Appliances',
+            },
+            {
+                key: '/products',
+                icon: <Icon icon="orders" />,
+                label: 'Products',
             },
         ]
     },
     {
-        key: '/products',
-        icon: <MdShoppingCart />,
-        label: 'Products',
+        key: '/groceries',
+        icon: <Icon icon="grocery" />,
+        label: 'Groceries',
+        children: [
+            {
+                key: '/groceries/list',
+                icon: <Icon icon="shopping_cart" />,
+                label: 'Shopping List',
+            },
+            {
+                key: '/groceries/stock',
+                icon: <Icon icon="shelves" />,
+                label: 'Stock',
+            },
+            {
+                key: '/groceries/products',
+                icon: <Icon icon="grocery" />,
+                label: 'Products',
+            },
+        ]
+    },
+    {
+        key: '/scan-logs',
+        icon: <Icon icon="barcode_reader" />,
+        label: 'Scanners',
     },
     {
         key: '/templates',
-        icon: <LayoutOutlined />,
+        icon: <Icon icon="contextual_token" />,
         label: 'Templates',
     },
     {
         key: '/settings',
-        icon: <SettingOutlined />,
+        icon: <Icon icon="settings" />,
         label: 'Settings',
     },
 ];
@@ -105,7 +125,7 @@ const MenuBar = observer(() => {
     >
         {store.isSmallDevice && <Button
             type="text"
-            icon={<MenuFoldOutlined />}
+            icon={<Icon icon="left_panel_open" />}
             onClick={() => store.sidebarCollapsed = !store.sidebarCollapsed}
             style={{
                 fontSize: '16px',
@@ -151,24 +171,29 @@ const InnerLayout = observer((props: { children?: React.ReactNode }) => {
         <Layout>
             <Layout.Header style={{ padding: 0, background: colorBgContainer }}>
                 <Flex align="center" wrap="wrap-reverse" gap="small" style={{ flex: 1, }}>
-                    <Button
-                        type="text"
-                        icon={store.sidebarCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-                        onClick={() => store.sidebarCollapsed = !store.sidebarCollapsed}
-                        style={{
-                            // position: "absolute",
-                            fontSize: '16px',
-                            width: 64,
-                            height: 64,
-                        }}
-                    />
+                    <div>
+                        <Button
+                            type="text"
+                            icon={store.sidebarCollapsed ? <Icon icon="left_panel_open" /> : <Icon icon="left_panel_close" />}
+                            onClick={() => store.sidebarCollapsed = !store.sidebarCollapsed}
+                            style={{
+                                // position: "absolute",
+                                fontSize: '16px',
+                                width: 64,
+                                height: 64,
+                            }}
+                        />
+
+                        <UseBlock block="page-title"></UseBlock>
+                    </div>
+
                     <div style={{ lineHeight: 0, display: "flex", gap: "8px", flex: 1, justifyContent: "end", paddingRight: "10px" }}>
                         {!store.isSmallDevice && <Input.Search
                             style={{ maxWidth: "300px", flex: 1 }}
                             {...search_props}
                         />}
                         <Button title="Scan with camera">
-                            <MdOutlineCameraAlt />
+                            <Icon icon="qr_code_scanner" />
                         </Button>
                         <LinkScannerButton />
                     </div>
@@ -183,7 +208,7 @@ const InnerLayout = observer((props: { children?: React.ReactNode }) => {
                     />
                 </div>}
             </Layout.Header>
-            <Layout.Content style={{ padding: "24px" }}>
+            <Layout.Content style={{ padding: "12px 24px" }}>
                 {props.children}
             </Layout.Content>
         </Layout>

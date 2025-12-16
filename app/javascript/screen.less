@@ -1,3 +1,9 @@
+
+body {
+    padding: 0;
+    margin: 0;
+}
+
 .logo {
     width: 24px;
     height: 24px;
@@ -34,5 +40,34 @@
         -webkit-mask: url("/public/logo.svg") no-repeat center;
         mask: url("/public/logo.svg") no-repeat center;
         mask-position: 50% 50%;
+    }
+}
+
+.mdi {
+    font-size: inherit !important;
+}
+
+.spinner {
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.step-box {
+    transition: opacity 0.5s ease;
+
+    &.previous-step {
+        opacity: 0.5;
+
+        &:has(:focus), &:focus-within, &:hover {
+            opacity: .75;
+        }
     }
 }
