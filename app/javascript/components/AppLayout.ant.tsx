@@ -128,7 +128,7 @@ const MenuBar = observer(() => {
             icon={<Icon icon="left_panel_open" />}
             onClick={() => store.sidebarCollapsed = !store.sidebarCollapsed}
             style={{
-                fontSize: '16px',
+                fontSize: '24px',
                 width: 64,
                 height: 64,
                 position: "absolute",
@@ -178,9 +178,10 @@ const InnerLayout = observer((props: { children?: React.ReactNode }) => {
                             onClick={() => store.sidebarCollapsed = !store.sidebarCollapsed}
                             style={{
                                 // position: "absolute",
-                                fontSize: '16px',
+                                fontSize: '24px',
                                 width: 64,
                                 height: 64,
+                                display: "flex",
                             }}
                         />
 

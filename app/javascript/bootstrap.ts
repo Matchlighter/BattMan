@@ -13,3 +13,6 @@ config.api.backend = new Axios({
     },
     withCredentials: true,
 })
+
+import "material-symbols";
+import "@/screen.less";

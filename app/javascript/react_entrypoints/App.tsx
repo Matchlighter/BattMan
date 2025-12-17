@@ -5,7 +5,6 @@ import { ProvideBlocks } from "@matchlighter/common_library/components/Block";
 
 import "@/bootstrap";
 import "@/cable";
-import "@/screen.less";
 
 import { AppLayout } from "@/components/AppLayout.ant";
 import { Route } from "@/components/Route";
