@@ -1,12 +1,12 @@
 module Api::V1
   class ThingsController < Api::ApiController
     def index
-      rel = Thing.all
-      rel = rel.roots if params[:roots_only]
-      rel = rel.where2(own_tags: { "template" => true }) if params[:templates_only]
-      rel = rel.where2(tags: params[:query].to_unsafe_h) if params[:query].present?
+      filters = []
+      filters << :root if params[:roots_only]
+      filters << { own: { template: true } } if params[:templates_only]
+      filters << params[:query].to_unsafe_h if params[:query].present?
 
-      @things = rel
+      @things = Thing.query(*filters)
       @sliced_data = sliced_json(@things)
     end
 
