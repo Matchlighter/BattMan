@@ -62,7 +62,21 @@ module Lookups
     end
 
     define_lookup :in do |p|
-      " IN (#{var_for(p)})"
+
+      throw :full_clause, "0=1" if p.blank?
+      bits = []
+      compacted = p.compact
+      if compacted.size < p.size
+        bits << "#{sqlize_path} IS NULL"
+      end
+
+      if compacted.count == 1
+        bits << "#{sqlize_path} = #{var_for(compacted.first)}"
+      elsif compacted.any?
+        bits << "#{sqlize_path} IN (#{var_for(compacted)})"
+      end
+
+      throw :full_clause, bits.join(' OR ')
     end
 
     define_lookup :present? do |p|
@@ -129,7 +143,7 @@ module Lookups
             parse(**value)
           else
             clause = catch :full_clause do
-              lookup ||= value.is_a?(Array) ? 'in' : 'eq'
+              lookup ||= value.is_a?(Array) && value.present? ? 'in' : 'eq'
               clause = parse_lookup(lookup, value)
               full_key = sqlize_path
               "#{full_key}#{clause}"

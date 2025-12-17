@@ -1,17 +1,51 @@
 class Thing < ApplicationRecord
+  include JsonbGraph
+
   has_paper_trail(
-    only: %i[own_tags]
+    only: %i[own_tags],
+    skip: %i[id tags created_at updated_at],
   )
+
+  # TODO Consider ArangoDB instead of Postgres for this model
+  #   - We'd probably still keep the own_tags and the cached tags separate
+  #     - It would be nice to do the tag merging as part of the AQL, but it
+  #         wouldn't understand the inheritable/non-inheritable distinction
+  #     - We could potentially have `own_tags` and `private_tags`, then live-calculate
+  #         inheritance from there
+  #     - Would Foxx be useful here?
+  #   - We could adapt the `lookups` language pretty easily
+  #   - With Arango's graph traversals, `JsonbGraph` would be a given
+  #       (though we would need to populate the Graph edges)
+  #   - Arango could also fulfil located-in queries quite easily
+  #   - Multi-tenanting could also be pretty easy
+  #
+  #   For now, let's keep with Postgres, but we should not call any ActiceRecord methods
+  #     from outside this model class, thus keeping it opaque/easily swappable.
 
   # before_save :compute_effective_tags
   after_save :refresh_inheritor_tags, if: :own_tags_changed?
 
   scope :roots, ->{
-    any_of(
-      where2(own_tags: { "implements__eq" => [] }),
-      where2(own_tags: { "implements__eq" => nil }),
-    )
+    where2(own_tags: { "implements" => [nil, []] })
   }
+
+  def self.query(*args, own: {}, **tags)
+    q = {
+      tags: tags,
+    }
+    q[:own_tags] = own if own.present?
+    args.each do |a|
+      case a
+      when :root
+        q.merge!(own_tags: { "implements" => [nil, []] })
+      when Hash
+        q[:tags].merge!(a)
+      when Symbol
+        q[:tags][a] = true
+      end
+    end
+    where2(**q)
+  end
 
   before_save do
     # self.inherits_from = tags["inherits"]
@@ -68,6 +102,9 @@ class Thing < ApplicationRecord
     # TODO Compute live if the cache is stale
     attributes["tags"]
   end
+
+  define_graph_connection :implements
+  define_graph_connection :located_in
 
   protected
 
