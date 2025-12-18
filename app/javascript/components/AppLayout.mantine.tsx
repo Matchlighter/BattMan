@@ -2,60 +2,14 @@ import { observer } from "mobx-react";
 import { useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 
-import { AppShell, Box, Burger, createTheme, Group, MantineProvider, Menu, NavLink, ScrollArea, Text, Tooltip } from "@mantine/core";
+import { AppShell, Box, Burger, createTheme, Group, MantineProvider, Menu, NavLink, ScrollArea, Tooltip } from "@mantine/core";
 import type { ItemType, MenuItemType } from "antd/es/menu/interface";
-import { MdDevices, MdLocationPin, MdMicrowave, MdOutlineAccountTree, MdSettings, MdShoppingCart, MdSpaceDashboard } from "react-icons/md";
-
-import { dft } from "@matchlighter/common_library/data/traversal";
 
 import { AppStore } from "@/data/app_store";
+import { MENU_ITEMS } from "./MenuItems";
+
+import '@mantine/core/styles.css';
 import "./screen.mantine.less";
-
-const MENU_ITEMS: ItemType<MenuItemType>[] = [
-    {
-        key: '/locations',
-        icon: <MdLocationPin />,
-        label: 'Locations',
-    },
-    {
-        key: '/items',
-        icon: <MdOutlineAccountTree />,
-        label: 'Items',
-        children: [
-            {
-                key: '/items/devices',
-                icon: <MdDevices />,
-                label: 'Devices',
-            },
-            {
-                key: '/items/appliances',
-                icon: <MdMicrowave />,
-                label: 'Appliances',
-            },
-        ]
-    },
-    {
-        key: '/products',
-        icon: <MdShoppingCart />,
-        label: 'Products',
-    },
-    {
-        key: '/templates',
-        icon: <MdSpaceDashboard />,
-        label: 'Templates',
-    },
-    {
-        key: '/settings',
-        icon: <MdSettings />,
-        label: 'Settings',
-    },
-];
-
-const ALL_KEYS: string[] = [];
-dft(MENU_ITEMS, (node) => {
-    ALL_KEYS.push(node.key as string);
-    return node.children || [];
-});
 
 function MenuLinkItem({ link }: { link: ItemType<MenuItemType> }) {
     if (link.children) {
@@ -174,7 +128,7 @@ export const AppLayout = observer((props: { children?: React.ReactNode }) => {
                 </AppShell.Header>
 
                 <AppShell.Navbar className={(collapsed && !store.isSmallDevice) ? "navbar-icons-only" : ""}>
-                    <Group p="md">
+                    <Group p="md" className="logo-wrapper">
                         <Burger opened={!collapsed} onClick={toggle} hiddenFrom="sm" size="sm" />
                         <div className="logo-sidebar">
                             <div className="logo-icon" />
@@ -184,21 +138,16 @@ export const AppLayout = observer((props: { children?: React.ReactNode }) => {
                             </div>
                         </div>
                     </Group>
-                    <ScrollArea type="never">
-                        <Box hidden={store.isCompactNavBar}>
-                            <NavLinks links={MENU_ITEMS} />
-                        </Box>
-                        <Box hidden={!store.isCompactNavBar} p="6px">
-                            <CompactNavLinks links={MENU_ITEMS} />
-                        </Box>
-                    </ScrollArea>
+
+                    <Box style={{ scrollbarWidth: "none", width: "100%", whiteSpace: "nowrap" }}>
+                        <NavLinks links={MENU_ITEMS} />
+                    </Box>
                 </AppShell.Navbar>
 
                 <AppShell.Main>
-                    <Text>This is the main section, your app content here.</Text>
-                    <Text>Alt layout demo – navbar and aside go all the way from top to bottom.</Text>
+                    {props.children}
                 </AppShell.Main>
-                <AppShell.Footer p="md">Footer</AppShell.Footer>
+                {/* <AppShell.Footer p="md">Footer</AppShell.Footer> */}
             </AppShell>
         </MantineProvider>
     </>

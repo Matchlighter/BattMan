@@ -1,3 +1,8 @@
+
+html, body {
+    background: var(--ant-layout-header-bg);
+}
+
 header.ant-layout-header {
     flex-wrap: wrap;
     min-height: 64px;
@@ -5,6 +10,7 @@ header.ant-layout-header {
 }
 
 .main-sidebar {
+
     .ant-layout-sider-children,
     .ant-drawer-body {
         display: flex;
@@ -52,7 +58,7 @@ header.ant-layout-header {
 .ant-layout {
     overflow: hidden;
 
-    > main {
+    >main {
         overflow: auto;
     }
 
@@ -82,13 +88,82 @@ header.ant-layout-header {
     }
 }
 
-.ant-btn-icon {
-    display: inline-flex;
-}
-
 .ant-select-centered {
-    > * {
+    >* {
         width: 100%;
         text-align: center;
     }
+}
+
+.in-place-editable-form {
+    [attribute^="ant-input-"][attribute$="-disabled"] {
+        color: inherit;
+        cursor: inherit;
+
+        input {
+            color: inherit;
+            cursor: inherit;
+        }
+    }
+}
+
+.ant-collapse.pane {
+    background-color: transparent;
+
+    .ant-collapse-item {
+        transition: background-color 0.3s ease;
+        background-color: transparent;
+
+        border-radius: var(--ant-border-radius-lg);
+
+        .ant-collapse-header {
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .ant-collapse-panel {
+            // margin-top: 8px;
+
+            .ant-collapse-body {
+                padding: 0 !important;
+            }
+        }
+
+        &.ant-collapse-item-active {
+            // background-color: var(--ant-collapse-header-bg);
+            background-color: var(--ant-layout-header-bg);
+
+            .ant-collapse-header {
+                // background-color: unset;
+            }
+        }
+    }
+}
+
+.micro-text {
+    font-size: 0.6rem;
+    color: var(--ant-color-text-secondary);
+}
+
+.content-box {
+    padding: 24px;
+
+    &.with-background {
+        background-color: var(--ant-layout-header-bg);
+        border-radius: var(--ant-border-radius-lg);
+    }
+
+    &.unpadded {
+        padding: 0;
+    }
+
+    &.unpadded-v {
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+}
+
+span:has(>.mdi) {
+    display: inline-flex;
 }

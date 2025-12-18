@@ -1,7 +1,7 @@
 import { Card, Col, Empty, Row, Statistic, Typography } from "antd";
 import { Component } from "react";
 
-import { Box } from "@/components/AppLayout.ant";
+import { Box } from "@/components/Basics";
 
 export class ScanLogsIndex extends Component {
     render() {

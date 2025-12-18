@@ -12,6 +12,7 @@ import { AppStore } from "@/data/app_store";
 import { ScanLogsRoute } from "@/routes/scan_logs/route";
 import { ScannersRoutes } from "@/routes/scanners/routes";
 import { SettingsRoute } from "@/routes/settings/route";
+import { ThingsRoutes } from "@/routes/things/Routes";
 
 export default class App extends React.Component {
     render() {
@@ -20,6 +21,7 @@ export default class App extends React.Component {
                 <AppStore.Context.Provider value={AppStore.instance}>
                     <BrowserRouter>
                         <AppLayout>
+                            <Route path="/things" element={<ThingsRoutes />} />
                             <Route path="/scan-logs" element={<ScanLogsRoute />} />
                             <Route path="/settings" element={<SettingsRoute />} />
                             <Route path="/scanners" element={<ScannersRoutes />} />

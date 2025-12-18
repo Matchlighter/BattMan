@@ -1,10 +1,16 @@
-
 .logo-sidebar {
     color: var(--mantine-color-text);
     gap: 8px;
 
     .logo-icon {
         background-color: var(--mantine-color-text);
+    }
+}
+
+.mantine-AppShell-root {
+    .mantine-AppShell-main {
+        height: 0;
+        overflow: auto;
     }
 }
 
@@ -19,27 +25,52 @@
         background: rgba(0, 0, 0, 0.2);
         padding: 0;
 
-        > .mantine-NavLink-root {
+        >.mantine-NavLink-root {
+            transition: padding-left 0.3s;
             padding-left: 24px;
         }
     }
 
-    &.navbar-icons-only {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+    .logo-wrapper {
+        width: 100%;
+        transition: margin 0.3s;
+        overflow: hidden;
+    }
 
-        .mantine-NavLink-root {
-            border-radius: 6px;
-            // margin: 0px 8px;
-            svg {
-                vertical-align: middle;
-                margin-bottom: 4px;
+    .mantine-NavLink-root *,
+    .logo-logotype {
+        transition: padding 0.3s, font-size 0.3s, opacity 0.3s;
+    }
+
+    &.navbar-icons-only {
+        .logo-wrapper {
+            margin-left: -4px;
+
+            .logo-logotype {
+                opacity: 0;
             }
         }
 
-        .logo-logotype {
-            display: none;
+        .mantine-NavLink-children {
+            >.mantine-NavLink-root {
+                padding-left: 12px;
+            }
+        }
+
+        .mantine-NavLink-root {
+            width: calc(100% - 8px);
+            margin: 0 4px;
+            border-radius: 6px;
+        }
+
+        .mantine-NavLink-section:first-child {
+            padding: 0 6px;
+            font-size: 20px;
+        }
+
+        .mantine-NavLink-body,
+        .mantine-NavLink-section:last-child {
+            opacity: 0;
         }
     }
 }

@@ -7,7 +7,7 @@ import { Component } from "react";
 import { observerMethod } from "@matchlighter/common_library/lib/decorators/method_component";
 import { context, with_meta_components } from "@matchlighter/meta_components";
 
-import { Box } from "@/components/AppLayout.ant";
+import { Box } from "@/components/Basics";
 import { ClientCallbackQR } from "@/components/ClientQR";
 import { Icon } from "@/components/Icon";
 import { FixedHeaderPageLayout } from "@/components/Layouts";

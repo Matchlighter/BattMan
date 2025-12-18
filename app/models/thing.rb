@@ -4,6 +4,7 @@ class Thing < ApplicationRecord
   has_paper_trail(
     only: %i[own_tags],
     skip: %i[id tags created_at updated_at],
+    # TODO Track only changes - we want an audit log and don't need to quickly restore old versions
   )
 
   # TODO Consider ArangoDB instead of Postgres for this model
@@ -16,8 +17,12 @@ class Thing < ApplicationRecord
   #   - We could adapt the `lookups` language pretty easily
   #   - With Arango's graph traversals, `JsonbGraph` would be a given
   #       (though we would need to populate the Graph edges)
-  #   - Arango could also fulfil located-in queries quite easily
+  #   - Arango could also fulfill located-in queries quite easily
   #   - Multi-tenanting could also be pretty easy
+  #   - Consider how to implement versioning - Graph? FK? How to version edges?
+  #     - Changes collection - version.before.located_in/version.after.located_in
+  #   - "Migrations" document to track "schema" changes?
+  #   -
   #
   #   For now, let's keep with Postgres, but we should not call any ActiceRecord methods
   #     from outside this model class, thus keeping it opaque/easily swappable.

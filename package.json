@@ -52,7 +52,7 @@
     "react-on-rails": "16.1.0",
     "react-router": "^5.0.0",
     "react-router-dom": "^5.0.0",
-    "recharts": "^3.5.1",
+    "recharts": "^3.6.0",
     "shakapacker": "9.4.0",
     "style-loader": "^4.0.0",
     "terser-webpack-plugin": "^5.3.14",

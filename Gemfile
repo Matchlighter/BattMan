@@ -62,8 +62,7 @@ group :test do
 end
 
 gem "shakapacker", "~> 9.4"
-# gem "react-rails", "~> 3.2"
-gem "react_on_rails", "= 16.1"
+gem "react_on_rails", "~> 16.1"
 
 gem "activerecord-import", "~> 2.2"
 gem "where_exists", "~> 3.2"
@@ -81,3 +80,5 @@ gem "miscellany", "~> 0.1.31"
 gem "foreman", "~> 0.90.0"
 gem "pry-rails", "~> 0.3.11"
 
+gem "faraday", "~> 2.14"
+gem "connection_pool", "~> 2.5"

@@ -1,86 +1,19 @@
 import cnames from "classnames";
 import { observer } from "mobx-react";
-import { ComponentProps, HTMLProps, useContext } from "react";
+import { ComponentProps, useContext } from "react";
 import { useHistory, useLocation } from "react-router";
 
 import { App, Button, ConfigProvider, Flex, Input, Layout, Menu, theme, ThemeConfig } from 'antd';
-import type { ItemType, MenuItemType } from "antd/es/menu/interface";
 
 import { dft } from "@matchlighter/common_library/data/traversal";
+import { UseBlock } from "@matchlighter/common_library/lib/components/Block";
 
 import "./screen.ant.less";
 
 import { AppStore } from "@/data/app_store";
 import { Icon } from "./Icon";
 import { LinkScannerButton } from "./LinkScannerButton";
-import { UseBlock } from "@matchlighter/common_library/lib/components/Block";
-
-const MENU_ITEMS: ItemType<MenuItemType>[] = [
-    {
-        key: '/locations',
-        icon: <Icon icon="location_on" />,
-        label: 'Locations',
-    },
-    {
-        key: '/items',
-        icon: <Icon icon="art_track" />,
-        label: 'Items',
-        children: [
-            {
-                key: '/items/devices',
-                icon: <Icon icon="devices" />,
-                label: 'Devices',
-            },
-            {
-                key: '/items/appliances',
-                icon: <Icon icon="microwave" />,
-                label: 'Appliances',
-            },
-            {
-                key: '/products',
-                icon: <Icon icon="orders" />,
-                label: 'Products',
-            },
-        ]
-    },
-    {
-        key: '/groceries',
-        icon: <Icon icon="grocery" />,
-        label: 'Groceries',
-        children: [
-            {
-                key: '/groceries/list',
-                icon: <Icon icon="shopping_cart" />,
-                label: 'Shopping List',
-            },
-            {
-                key: '/groceries/stock',
-                icon: <Icon icon="shelves" />,
-                label: 'Stock',
-            },
-            {
-                key: '/groceries/products',
-                icon: <Icon icon="grocery" />,
-                label: 'Products',
-            },
-        ]
-    },
-    {
-        key: '/scan-logs',
-        icon: <Icon icon="barcode_reader" />,
-        label: 'Scanners',
-    },
-    {
-        key: '/templates',
-        icon: <Icon icon="contextual_token" />,
-        label: 'Templates',
-    },
-    {
-        key: '/settings',
-        icon: <Icon icon="settings" />,
-        label: 'Settings',
-    },
-];
+import { MENU_ITEMS } from "./MenuItems";
 
 const ALL_KEYS: string[] = [];
 dft(MENU_ITEMS, (node) => {
@@ -97,9 +30,7 @@ const AppMenu = observer(() => {
 
     return <>
         <Menu
-            // theme="dark"
             mode="inline"
-            // defaultSelectedKeys={['1']}
             selectedKeys={selectedKeys}
             onSelect={(info) => {
                 history.push(info.key);
@@ -169,7 +100,7 @@ const InnerLayout = observer((props: { children?: React.ReactNode }) => {
     return <Layout style={{ height: "100vh" }}>
         <MenuBar />
         <Layout>
-            <Layout.Header style={{ padding: 0, background: colorBgContainer }}>
+            <Layout.Header style={{ padding: 0 }}>
                 <Flex align="center" wrap="wrap-reverse" gap="small" style={{ flex: 1, }}>
                     <div>
                         <Button
@@ -216,33 +147,30 @@ const InnerLayout = observer((props: { children?: React.ReactNode }) => {
     </Layout>
 });
 
-export const Box = (props: HTMLProps<HTMLDivElement>) => {
-    const {
-        token: { colorBgContainer, borderRadiusLG },
-    } = theme.useToken();
-    return <div
-        {...props}
-        style={{
-            padding: 24,
-            background: colorBgContainer,
-            borderRadius: borderRadiusLG,
-            ...(props.style || {}),
-        }}
-    />;
+const btheme = {
+    // navColor: "rgb(20,20,20)", // Flat, dark gray
+    navColor: "rgb(20,22,25)", // Dark Slate
+    // navColor: "rgb(20,25,30)", // Slate
 }
+// const light_theme = {
+//     navColor: "rgb(210,215,220)"
+// }
 
 const THEME: ThemeConfig = {
     algorithm: theme.darkAlgorithm,
     token: {
-        colorPrimary: 'rgba(196, 171, 45, 1)',
+        // colorPrimary: 'rgba(209, 182, 46, 1)', // Darker/goldenrod
+        colorPrimary: 'rgba(238, 207, 48, 1)',
         // borderRadius: 0,
     },
     components: {
         Layout: {
             // siderBg: "#333",
+            lightSiderBg: btheme.navColor,
+            headerBg: btheme.navColor,
         },
         Menu: {
-            // darkItemBg: "#333",
+            itemBg: btheme.navColor,
             // darkSubMenuItemBg: "#222",
             // darkItemHoverBg: "red",
             // darkItemSelectedBg: "red",
