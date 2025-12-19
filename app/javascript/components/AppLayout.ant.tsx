@@ -1,6 +1,6 @@
 import cnames from "classnames";
 import { observer } from "mobx-react";
-import { ComponentProps, useContext } from "react";
+import React, { ComponentProps, useContext } from "react";
 import { useHistory, useLocation } from "react-router";
 
 import { App, Button, ConfigProvider, Flex, Input, Layout, Menu, theme, ThemeConfig } from 'antd';
@@ -82,6 +82,16 @@ const MenuBar = observer(() => {
     </Layout.Sider>
 });
 
+const PluckBodyBackground = () => {
+    const { token: { Layout: { headerBg } } } = theme.useToken();
+
+    React.useLayoutEffect(() => {
+        document.body.style.backgroundColor = headerBg
+    }, [headerBg])
+
+    return null;
+}
+
 const InnerLayout = observer((props: { children?: React.ReactNode }) => {
     const store = useContext(AppStore.Context);
 
@@ -98,6 +108,7 @@ const InnerLayout = observer((props: { children?: React.ReactNode }) => {
     }
 
     return <Layout style={{ height: "100vh" }}>
+        <PluckBodyBackground />
         <MenuBar />
         <Layout>
             <Layout.Header style={{ padding: 0 }}>
@@ -161,6 +172,7 @@ const THEME: ThemeConfig = {
     token: {
         // colorPrimary: 'rgba(209, 182, 46, 1)', // Darker/goldenrod
         colorPrimary: 'rgba(238, 207, 48, 1)',
+        colorBgContainer: "rgb(30,33,37)",
         // borderRadius: 0,
     },
     components: {
@@ -176,6 +188,9 @@ const THEME: ThemeConfig = {
             // darkItemSelectedBg: "red",
             activeBarBorderWidth: 0,
         },
+        Collapse: {
+            headerBg: "rgb(20,20,20)",
+        }
     },
 };
 

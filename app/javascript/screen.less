@@ -74,8 +74,20 @@ body {
     }
 }
 
+.css-var-r0 {
+    --glass-color: var(--ant-layout-header-bg);
+    // --glass-color: rgb(30, 30, 30);
+    // --glass-color: var(--ant-color-bg-container);
+}
+
 main {
-    background: linear-gradient(var(--ant-layout-header-bg) 0%, transparent 70%);
+    background: linear-gradient(to bottom, var(--glass-color) 0%, transparent 70%);
+    // background: linear-gradient(to bottom, var(--ant-layout-header-bg) 0%, transparent 70%);
+    // background: linear-gradient(to bottom, var(--ant-layout-header-bg) 0%, transparent 70%, transparent calc(100% - 200px), var(--ant-layout-header-bg) 100%);
+    // background:
+    //     linear-gradient(to bottom, var(--ant-layout-header-bg) 0%, transparent 70%, transparent calc(100% - 200px), var(--ant-layout-header-bg) 100%),
+    //     linear-gradient(to right, var(--ant-layout-header-bg) 0%, transparent 200px)
+    // ;
 }
 
 .sub-header-fancy {
@@ -112,7 +124,7 @@ main {
             left: 0;
             bottom: 0;
             right: 0;
-            height: 1px;
+            height: 2px;
             background: linear-gradient(to right, rgba(255, 255, 255, 0), #FFF3 60px, #FFF3 300px, #FFF1 500px, rgba(255, 255, 255, 0));
         }
 
@@ -131,14 +143,14 @@ main {
                 height: calc(100% + var(--blur-radius));
     
                 // background: linear-gradient(var(--ant-layout-body-bg) 0%, transparent 50%);
-                background: linear-gradient(var(--ant-layout-header-bg) calc(var(--sticky-padding) * 2), transparent 90%);
+                background: linear-gradient(var(--glass-color) calc(var(--sticky-padding) * 2), transparent 90%);
     
                 z-index: -1;
                 pointer-events: none;
                 mask-image: linear-gradient(to bottom,
                         black 0% calc(100% - var(--blur-radius)),
                         transparent calc(100% - var(--blur-radius)) 100%);
-                backdrop-filter: blur(var(--blur-radius));
+                backdrop-filter: blur(var(--blur-radius)) brightness(1.1);
             }
     
             >.backdrop-edge {
