@@ -62,7 +62,6 @@ module Lookups
     end
 
     define_lookup :in do |p|
-
       throw :full_clause, "0=1" if p.blank?
       bits = []
       compacted = p.compact

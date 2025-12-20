@@ -177,30 +177,31 @@ module ArangoLookups
     def ast_render_access(ast, lines)
       ast[:vname] ||= "#{ast[:key].gsub(/\W/, '')}_#{SecureRandom.hex(2)}"
 
-      parent_doc = traverse_up(ast[:parent_ast]) { |n|
-        throw :found if n[:type] == 'root' || (n[:type] == 'access' && n[:type_hint] != 'scalar')
-      }
-
-      if ast[:type_hint] == 'scalar'
-        graph_clause = "#{ast[:parent_ast][:vname]}.#{ast[:key]}"
-      else
-        depth = "1" # 1..8
-        graph_clause = "(#{<<~AQL.strip})"
-          FOR #{ast[:vname]}, #{ast[:vname]}_edge, #{ast[:vname]}_path IN #{depth} OUTBOUND #{parent_doc[:vname]} GRAPH 'ThingGraph'
-            PRUNE #{ast[:vname]}_edge.type != '#{ast[:key]}'
-            FILTER #{ast[:vname]}_edge.type != '#{ast[:key]}'
-            RETURN DISTINCT #{ast[:vname]}
-        AQL
-      end
-
-      past = ast[:parent_ast]
       if ast[:match].present?
-        if ast[:type_hint] == "scalar"
-          raw_ref = graph_clause
-        else
-          raw_ref = "#{ast[:vname]}_raw"
-          lines << "LET #{raw_ref} = #{graph_clause}"
+        parent_doc = traverse_up(ast[:parent_ast]) { |n|
+          throw :found if n[:type] == 'root' || (n[:type] == 'access' && n[:type_hint] != 'scalar')
+        }
+
+        mode = ast[:match]
+        depth = "1"
+        if mode.start_with?('^')
+          mode = mode[1..-1]
+          depth = "1..10"
         end
+
+        magic_graph_clause = <<~AQL
+          #{ast[:parent_ast][:vname]}.#{ast[:key]} != "/_GRAPH_/" ? #{ast[:parent_ast][:vname]}.#{ast[:key]} : (
+            FOR #{ast[:vname]}, #{ast[:vname]}_edge, #{ast[:vname]}_path IN #{depth} OUTBOUND #{parent_doc[:vname]} GRAPH 'ThingGraph'
+              PRUNE #{ast[:vname]}_edge.type != '#{ast[:key]}'
+              FILTER #{ast[:vname]}_edge.type != '#{ast[:key]}'
+              RETURN DISTINCT #{ast[:vname]}
+          )
+        AQL
+
+        # TODO: If the final :match filter below doesn't reference the raw_ref, we should just
+        #   flatten this LET, merging the filters directly into the graph_clause
+        raw_ref = "#{ast[:vname]}_raw"
+        lines << "LET #{raw_ref} = #{magic_graph_clause}"
 
         lines << "LET #{ast[:vname]} = (#{<<~AQL})"
           FOR #{ast[:vname]} IN #{raw_ref}
@@ -208,23 +209,20 @@ module ArangoLookups
             RETURN #{ast[:vname]}
         AQL
 
-        if ast[:match] == "ALL"
+        if mode == "ALL"
           lines << "FILTER LENGTH(#{raw_ref}) == LENGTH(#{ast[:vname]})"
-        elsif ast[:match] == "ANY"
+        elsif mode == "ANY"
           lines << "FILTER LENGTH(#{ast[:vname]}) > 0"
-        elsif ast[:match].is_a?(Integer) || ast[:match].to_s =~ /^\d+$/
-          lines << "FILTER LENGTH(#{ast[:vname]}) == #{ast[:match]}"
+        elsif mode.is_a?(Integer) || mode.to_s =~ /^\d+$/
+          lines << "FILTER LENGTH(#{ast[:vname]}) == #{mode}"
         end
       else
-        if ast[:type_hint] == "scalar"
-          ast[:vname] = graph_clause
-        else
-          lines << "LET #{ast[:vname]} = #{graph_clause.strip}"
-        end
+        ast[:vname] = "#{ast[:parent_ast][:vname]}.#{ast[:key]}"
+        # lines << "LET #{ast[:vname]} = #{ast[:parent_ast][:vname]}.#{ast[:key]}"
         ast_render_children(ast, lines)
       end
 
-      lines[-1] += "[0]" if ast[:type] == 'pointer'
+      # lines[-1] += "[0]" if ast[:type] == 'pointer'
     end
 
     def ast_render_children(ast, lines, only: nil, except: nil)
