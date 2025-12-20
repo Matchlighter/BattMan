@@ -1,7 +1,7 @@
 import cnames from "classnames";
 import { observer } from "mobx-react";
 import React, { ComponentProps, useContext } from "react";
-import { useHistory, useLocation } from "react-router";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import { App, Button, ConfigProvider, Flex, Input, Layout, Menu, theme, ThemeConfig } from 'antd';
 
@@ -22,7 +22,7 @@ dft(MENU_ITEMS, (node) => {
 });
 
 const AppMenu = observer(() => {
-    const history = useHistory();
+    const navigate = useNavigate();
     const location = useLocation();
     const store = useContext(AppStore.Context);
 
@@ -33,7 +33,7 @@ const AppMenu = observer(() => {
             mode="inline"
             selectedKeys={selectedKeys}
             onSelect={(info) => {
-                history.push(info.key);
+                navigate(info.key);
                 if (store.isSmallDevice) {
                     store.sidebarCollapsed = true;
                 }

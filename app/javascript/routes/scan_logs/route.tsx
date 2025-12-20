@@ -4,8 +4,9 @@ import { Component } from "react";
 
 import { PageHeader } from "@/components/Layouts";
 import { ScanLogsIndex } from ".";
+import { Routes } from "react-router";
 
-export class ScanLogsRoute extends Component {
+export default class ScanLogsRoute extends Component {
     render() {
         return <>
             <Flex vertical gap={16}>
@@ -13,11 +14,11 @@ export class ScanLogsRoute extends Component {
                     <Select style={{ minWidth: "200px", flex: 1 }}></Select>
                 </PageHeader>
 
-                <Route exact path="/" element={<ScanLogsIndex />} />
-
-                <Route path="/:scanner_id">
-                </Route>
-            </Flex>
+                <Routes>
+                    <Route index element={<ScanLogsIndex />} />
+                    <Route path="/:scanner_id" />
+                </Routes>
+            </Flex >
         </>
     }
 }

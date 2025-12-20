@@ -47,7 +47,7 @@ export class LinkScannerButton extends Component {
                         ]}
                         onSelect={(_, option) => {
                             if (option.value == '_new_') {
-                                this.history.push('/scanners/onboard/');
+                                this.navigate('/scanners/onboard/');
                                 // TODO: Close popover
                             } else {
                                 this.store.linkScanner(option.value as string);

@@ -1,7 +1,8 @@
 import { Route } from "@/components/Route";
 import { ScannerOnboardRoute } from "./onboard";
+import { Routes } from "react-router";
 
-export const ScannersRoutes = () => <>
-    <Route exact path="/" element={<div>Scanners Index</div>} />
+export default () => <Routes>
+    <Route index element={<div>Scanners Index</div>} />
     <Route path="/onboard/" element={<ScannerOnboardRoute />} />
-</>
+</Routes>
