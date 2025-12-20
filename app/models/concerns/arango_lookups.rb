@@ -136,7 +136,7 @@ module ArangoLookups
       @injected_vars = {}
       @injected_cache_map = {}
 
-      @root_node = { type: 'root', collection: @coll, vname: "root_item", children: {} }
+      @root_node = { type: 'root', collection: @coll, vname: "root_item", children: {}, cost: 0 }
       @current_node = @root_node
     end
 
@@ -151,7 +151,9 @@ module ArangoLookups
           lookup ||= value.is_a?(Array) && value.present? ? 'in' : 'eq'
           clause = parse_lookup(lookup, value)
           if clause.present?
-              ast_child!('filter', { key: key, clause: clause })
+            push key do
+              ast_child!('filter', { clause: clause })
+            end
           end
         end
       end
@@ -175,7 +177,6 @@ module ArangoLookups
     def ast_render_access(ast, lines)
       ast[:vname] ||= "#{ast[:key].gsub(/\W/, '')}_#{SecureRandom.hex(2)}"
 
-      # immediate_access = ast[:parent_ast]
       parent_doc = traverse_up(ast[:parent_ast]) { |n|
         throw :found if n[:type] == 'root' || (n[:type] == 'access' && n[:type_hint] != 'scalar')
       }
@@ -192,28 +193,34 @@ module ArangoLookups
         AQL
       end
 
-      if ast[:match].present? && ast[:children].values.any? { |c| c[:type] == 'filter' }
-        lines << "LET #{ast[:vname]}_raw = #{graph_clause}"
+      past = ast[:parent_ast]
+      if ast[:match].present?
+        if ast[:type_hint] == "scalar"
+          raw_ref = graph_clause
+        else
+          raw_ref = "#{ast[:vname]}_raw"
+          lines << "LET #{raw_ref} = #{graph_clause}"
+        end
 
         lines << "LET #{ast[:vname]} = (#{<<~AQL})"
-          FOR #{ast[:vname]} IN #{ast[:vname]}_raw
+          FOR #{ast[:vname]} IN #{raw_ref}
             #{ast_render_children(ast, [])}
             RETURN #{ast[:vname]}
         AQL
 
         if ast[:match] == "ALL"
-          lines << "FILTER LENGTH(#{ast[:vname]}_raw) == LENGTH(#{ast[:vname]})"
+          lines << "FILTER LENGTH(#{raw_ref}) == LENGTH(#{ast[:vname]})"
         elsif ast[:match] == "ANY"
           lines << "FILTER LENGTH(#{ast[:vname]}) > 0"
         elsif ast[:match].is_a?(Integer) || ast[:match].to_s =~ /^\d+$/
           lines << "FILTER LENGTH(#{ast[:vname]}) == #{ast[:match]}"
         end
       else
-        # if ast[:type_hint] == "scalar"
-        #   ast[:vname] = graph_clause
-        # else
+        if ast[:type_hint] == "scalar"
+          ast[:vname] = graph_clause
+        else
           lines << "LET #{ast[:vname]} = #{graph_clause.strip}"
-        # end
+        end
         ast_render_children(ast, lines)
       end
 
@@ -221,7 +228,7 @@ module ArangoLookups
     end
 
     def ast_render_children(ast, lines, only: nil, except: nil)
-      ast[:children].each_value do |child|
+      ast[:children].values.sort_by{|c| c[:cost] || 1000000 }.each do |child|
         next if only && !only.include?(child[:type])
         next if except && except.include?(child[:type])
         render_ast(child, lines)
@@ -230,7 +237,7 @@ module ArangoLookups
     end
 
     def ast_render_filter_clause(filter, key: nil)
-      key ||= "#{filter[:parent_ast][:vname]}.#{filter[:key]}"
+      key ||= "#{filter[:parent_ast][:vname]}"
       key = key.join('.') if key.is_a?(Array)
 
       clause = filter[:clause]
@@ -281,10 +288,15 @@ module ArangoLookups
         key: pk[1],
         type_hint: pk[2] || 'scalar',
         match: pk[3],
+        cost: 1,
       })
+
+      # Float same-document accesses up a little so we can reduce the number of "joins"
+      @current_node[:cost] += 10 unless @current_node[:type_hint] == 'scalar'
 
       yield
     ensure
+      last_node[:cost] += @current_node[:cost]
       @current_node = last_node
     end
 
