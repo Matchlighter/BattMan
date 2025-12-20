@@ -7,6 +7,13 @@ import { CABLE, Message } from "@/cable";
 import { ScanHookStore } from "./scan_hooking";
 import { ClientCodesStore } from "./client_codes";
 
+const HID_CONFIG = {
+    min_length: 4,
+    minimum_rate_limit_ms: 30,
+    prefix: "", // e.g., "\u001D" for some scanners
+    suffix: "\n", // e.g., "\n" or a special character
+}
+
 export class AppStore {
     static instance = new AppStore();
     static Context = React.createContext(AppStore.instance);
@@ -23,6 +30,8 @@ export class AppStore {
         }));
         this.refreshWindowHeight();
 
+        this.listenForHIDScans();
+
         reaction(() => this.isSmallDevice, (isSmallDevice) => {
             this.sidebarCollapsed = isSmallDevice;
         }, { fireImmediately: true });
@@ -37,7 +46,7 @@ export class AppStore {
             },
             client_scanned: (data: Message<{ scanner_id: string; payload: string }>) => {
                 console.log(`Scanned from scanner ${data.scanner_id}: ${data.payload}`);
-                this.client_codes_store.handleCodeScanned(data.payload,data.scanner_id);
+                this.client_codes_store.handleCodeScanned(data.payload, data.scanner_id);
             },
             scan: (data: Message<{ payload: string, hooked: boolean }>) => {
                 if (data.hooked) {
@@ -121,5 +130,57 @@ export class AppStore {
         this.paired_scanner_id = null;
         this._scanner_channel?.unsubscribe();
         this._scanner_channel = null;
+    }
+
+    private listenForHIDScans() {
+        let fast_keys = [];
+        let last_key_time_ms = 0;
+        let scan_commit_timer;
+        const commit_hid_code = () => {
+            const raw_code = fast_keys.join('');
+
+            // Check if code matches expected prefix/suffix pattern
+            const hasPrefix = !HID_CONFIG.prefix || raw_code.startsWith(HID_CONFIG.prefix);
+            const hasSuffix = !HID_CONFIG.suffix || raw_code.endsWith(HID_CONFIG.suffix);
+
+            if (hasPrefix && hasSuffix) {
+                let scanned_code = raw_code;
+
+                // Strip prefix and suffix if configured
+                if (HID_CONFIG.prefix) {
+                    scanned_code = scanned_code.slice(HID_CONFIG.prefix.length);
+                }
+                if (HID_CONFIG.suffix) {
+                    scanned_code = scanned_code.slice(0, -HID_CONFIG.suffix.length);
+                }
+
+                if (scanned_code.length >= HID_CONFIG.min_length) {
+                    console.log(`HID code received: ${scanned_code}`);
+                    if (scan_commit_timer) clearTimeout(scan_commit_timer);
+                    fast_keys = [];
+                }
+            }
+        }
+        window.addEventListener("keypress", (e) => {
+            const now_ms = Date.now();
+            if (now_ms - last_key_time_ms > HID_CONFIG.minimum_rate_limit_ms || document.activeElement.tagName == "INPUT" || document.activeElement.tagName == "TEXTAREA") {
+                fast_keys = [];
+            }
+            last_key_time_ms = now_ms;
+            if (e.key === "Enter") {
+                fast_keys.push("\n");
+                commit_hid_code();
+                e.stopPropagation();
+                e.preventDefault();
+            } else {
+                fast_keys.push(e.key);
+                if (scan_commit_timer) clearTimeout(scan_commit_timer);
+                if (fast_keys.length >= HID_CONFIG.min_length) {
+                    scan_commit_timer = setTimeout(commit_hid_code, HID_CONFIG.minimum_rate_limit_ms);
+                    e.stopPropagation();
+                    e.preventDefault();
+                }
+            }
+        })
     }
 }

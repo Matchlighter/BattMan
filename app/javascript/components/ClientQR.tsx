@@ -3,11 +3,17 @@ import { useContext, useEffect, useState } from "react";
 import { AppStore } from "@/data/app_store";
 import { QRCode } from "antd";
 
-export const ClientActionQR = ({ action, ...rest }: { action: string } & Omit<React.ComponentProps<typeof QRCode>, "value">) => {
-    const store = useContext(AppStore.Context);
-    return <QRCode value={`BATTMAN:CLIENT:${store.client_uid}:${action}`}
+export const QR = ({ ...rest }: React.ComponentProps<typeof QRCode>) => {
+    return <QRCode
         color="black"
         bgColor="white"
+        {...rest}
+    />
+}
+
+export const ClientActionQR = ({ action, ...rest }: { action: string } & Omit<React.ComponentProps<typeof QRCode>, "value">) => {
+    const store = useContext(AppStore.Context);
+    return <QR value={`BATTMAN:CLIENT:${store.client_uid}:${action}`}
         {...rest}
     />
 }

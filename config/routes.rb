@@ -38,6 +38,7 @@ Rails.application.routes.draw do
   end
 
   scope :constraints => { :format => 'html' } do
-    get "*path", to: "ui#index"
+    get "mobile_scanner", to: "ui#mobile_scanner"
+    get "*path", to: "ui#catchall"
   end
 end

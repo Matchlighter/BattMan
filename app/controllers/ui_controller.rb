@@ -1,4 +1,8 @@
 class UiController < ApplicationController
-  def index
+  def catchall
+    render :index
+  end
+
+  def mobile_scanner
   end
 end

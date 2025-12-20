@@ -1,25 +1,35 @@
-import { Breadcrumb, Button, Divider, Flex, Popover, QRCode, Select, Switch } from "antd";
+import { Breadcrumb, Button, Divider, Flex, Popover, Select, Switch } from "antd";
 import { computed } from "mobx";
 import { observer } from "mobx-react";
 import { Component } from "react";
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router";
 
 import { BoundField } from "@matchlighter/cognizant_forms/components";
 import { observerMethod } from "@matchlighter/common_library/decorators/method_component";
 import { context, hook, with_meta_components } from "@matchlighter/meta_components";
 
 import { AppStore } from "@/data/app_store";
+import { QR } from "./ClientQR";
 import { Icon } from "./Icon";
-import { ClientActionQR } from "./ClientQR";
 
 @with_meta_components
 @observer
 export class LinkScannerButton extends Component {
     @context(AppStore.Context) accessor store: AppStore;
-    @hook(useHistory) accessor history: ReturnType<typeof useHistory>;
+    @hook(useNavigate) accessor navigate: ReturnType<typeof useNavigate>;
 
     @computed get isLinked() {
         return !!this.store.paired_scanner_id;
+    }
+
+    @computed get mobileScannerURL() {
+        const u = new URL(window.location.toString());
+        u.pathname = `/mobile_scanner/`;
+        // Including the full BATTMAN:CLIENT token here allows this QR to be dual-purpose:
+        //   It can be scanned my a wireless scanner, or by a phone
+        u.searchParams.set('link', `BATTMAN:CLIENT:${this.store.client_uid}:LINK`);
+        // TODO Include an auth token
+        return u.toString();
     }
 
     @observerMethod renderPopover() {
@@ -41,6 +51,10 @@ export class LinkScannerButton extends Component {
                                 label: 'A403A6E5',
                             },
                             {
+                                value: '_local_',
+                                label: 'Camera/HID',
+                            },
+                            {
                                 value: '_new_',
                                 label: 'Connect New',
                             },
@@ -49,6 +63,7 @@ export class LinkScannerButton extends Component {
                             if (option.value == '_new_') {
                                 this.navigate('/scanners/onboard/');
                                 // TODO: Close popover
+                            } else if (option.value == '_local_') {
                             } else {
                                 this.store.linkScanner(option.value as string);
                             }
@@ -57,7 +72,7 @@ export class LinkScannerButton extends Component {
 
                     <Divider style={{ margin: 0, fontSize: "0.65rem" }} plain>Or Scan</Divider>
 
-                    <ClientActionQR action="LINK" />
+                    <QR value={this.mobileScannerURL} />
                 </Flex>
             </>
         }
