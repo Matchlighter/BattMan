@@ -10,16 +10,22 @@ module ArangoLookups
   end
 
   class LookupBuilder
-    def self.parse(**kwargs)
-      new().tap do |builder|
-        builder.send(:parse, **kwargs)
-      end.build_query
+    def self.parse(*args, **kwargs)
+      new(*args, kwargs).aql
     end
 
-    def build_query
-      ast = @current_context[:ast]
-      # puts YAML.dump(ast)
-      return render_ast(ast)
+    def ast
+      @parsed ||= parse(**@filters)
+      @root_node
+    end
+
+    def print_ast
+      puts YAML.dump(ast)
+    end
+
+    def aql
+      # puts print_ast
+      render_ast(ast)
     end
 
     def self.define_lookup(key, operator = nil, &block)
@@ -77,7 +83,7 @@ module ArangoLookups
     end
 
     define_lookup :present? do |p|
-      gnode = @current_context[:ast]
+      gnode = @current_node
       pnode = gnode[:parent_ast]
 
       logic = p ? '> 0' : '< 1'
@@ -123,17 +129,16 @@ module ArangoLookups
 
     protected
 
-    def initialize()
+    def initialize(coll, filters)
+      @coll = coll
+      @filters = filters
+
       @injected_vars = {}
       @injected_cache_map = {}
 
-      @current_context = {
-        ast: { type: 'root', vname: "t", children: {}, filters: [] },
-        path: ["t"],
-      }
+      @root_node = { type: 'root', collection: @coll, vname: "root_item", children: {} }
+      @current_node = @root_node
     end
-
-    # { type: 'root' | 'scalar' | 'graph' | 'pointer', vname: "", filters: [], children: {} }
 
     def parse(**kwargs)
       kwargs.each do |hkey, value|
@@ -145,81 +150,86 @@ module ArangoLookups
         else
           lookup ||= value.is_a?(Array) && value.present? ? 'in' : 'eq'
           clause = parse_lookup(lookup, value)
-          ast_child!('filter', { key: key, clause: clause }) if clause.present?
+          if clause.present?
+              ast_child!('filter', { key: key, clause: clause })
+          end
         end
       end
     end
 
-    def render_ast(ast, lines = [])
+    def render_ast(ast = @root_node, lines = [])
       t = ast[:type]
       case ast[:type]
       when 'root'
-        lines << "FOR t IN Things"
-        render_ast_children(ast, lines)
-        lines << "RETURN t"
-      when 'scalar', 'graph', 'pointer'
-        render_ast_condition(ast, lines)
+        lines << "FOR #{ast[:vname]} IN #{ast[:collection]}"
+        ast_render_children(ast, lines)
+        lines << "RETURN #{ast[:vname]}"
+      when 'access'
+        ast_render_access(ast, lines)
       when 'filter'
-        lines << "FILTER #{render_filter_clause(ast)}"
+        lines << "FILTER #{ast_render_filter_clause(ast)}"
       end
       lines.join("\n")
     end
 
-    def render_ast_condition(ast, lines)
-      ast[:vname] ||= "filt_#{lines.size + 1}_val"
-      qual = "#{ast[:parent_ast][:vname]}.#{ast[:key]}"
+    def ast_render_access(ast, lines)
+      ast[:vname] ||= "#{ast[:key].gsub(/\W/, '')}_#{SecureRandom.hex(2)}"
 
-      case ast[:type]
-      when 'scalar'
-        lines << "LET #{ast[:vname]} = #{qual}"
-        render_ast_children(ast, lines)
-      when 'graph', 'pointer'
-        parent_doc = traverse_up(ast[:parent_ast]) { |n| throw :found if %w[root graph pointer].include?(n[:type]) }
+      # immediate_access = ast[:parent_ast]
+      parent_doc = traverse_up(ast[:parent_ast]) { |n|
+        throw :found if n[:type] == 'root' || (n[:type] == 'access' && n[:type_hint] != 'scalar')
+      }
 
-        scalar_filter_nodes = []
-        traverse(ast[:children].values) do |node|
-          case node[:type]
-          when 'filter'
-            scalar_filter_nodes << node
-          when 'scalar'
-          else
-            throw :continue
-          end
-          node[:children].values
-        end
-
-        clauses = scalar_filter_nodes.map do |sf_node|
-          key = traverse_up(sf_node, to: ast).map { |n| n[:key]}.reverse
-          key.shift
-          key.unshift(ast[:vname])
-          "FILTER #{render_filter_clause(sf_node, key: key)}"
-        end
-
-        graph_clause = <<~AQL
-          FOR #{ast[:vname]}, #{ast[:vname]}_edge, #{ast[:vname]}_path IN 1..8 OUTBOUND #{parent_doc[:vname]} GRAPH 'ThingGraph'
+      if ast[:type_hint] == 'scalar'
+        graph_clause = "#{ast[:parent_ast][:vname]}.#{ast[:key]}"
+      else
+        depth = "1" # 1..8
+        graph_clause = "(#{<<~AQL.strip})"
+          FOR #{ast[:vname]}, #{ast[:vname]}_edge, #{ast[:vname]}_path IN #{depth} OUTBOUND #{parent_doc[:vname]} GRAPH 'ThingGraph'
             PRUNE #{ast[:vname]}_edge.type != '#{ast[:key]}'
             FILTER #{ast[:vname]}_edge.type != '#{ast[:key]}'
-            #{clauses.join("\n")}
             RETURN DISTINCT #{ast[:vname]}
         AQL
-        lines << "LET #{ast[:vname]} = (#{graph_clause.strip})"
-        lines[-1] += "[0]" if ast[:type] == 'pointer'
-        # ... Non-Scalar filters can render here
-        # TODO Cleanup redundant filter emit
-        render_ast_children(ast, lines)
       end
+
+      if ast[:match].present? && ast[:children].values.any? { |c| c[:type] == 'filter' }
+        lines << "LET #{ast[:vname]}_raw = #{graph_clause}"
+
+        lines << "LET #{ast[:vname]} = (#{<<~AQL})"
+          FOR #{ast[:vname]} IN #{ast[:vname]}_raw
+            #{ast_render_children(ast, [])}
+            RETURN #{ast[:vname]}
+        AQL
+
+        if ast[:match] == "ALL"
+          lines << "FILTER LENGTH(#{ast[:vname]}_raw) == LENGTH(#{ast[:vname]})"
+        elsif ast[:match] == "ANY"
+          lines << "FILTER LENGTH(#{ast[:vname]}) > 0"
+        elsif ast[:match].is_a?(Integer) || ast[:match].to_s =~ /^\d+$/
+          lines << "FILTER LENGTH(#{ast[:vname]}) == #{ast[:match]}"
+        end
+      else
+        # if ast[:type_hint] == "scalar"
+        #   ast[:vname] = graph_clause
+        # else
+          lines << "LET #{ast[:vname]} = #{graph_clause.strip}"
+        # end
+        ast_render_children(ast, lines)
+      end
+
+      lines[-1] += "[0]" if ast[:type] == 'pointer'
     end
 
-    def render_ast_children(ast, lines, only: nil, except: nil)
+    def ast_render_children(ast, lines, only: nil, except: nil)
       ast[:children].each_value do |child|
-        next if only && !only.include?(child[:key])
-        next if except && except.include?(child[:key])
+        next if only && !only.include?(child[:type])
+        next if except && except.include?(child[:type])
         render_ast(child, lines)
       end
       lines.join("\n")
     end
 
-    def render_filter_clause(filter, key: nil)
+    def ast_render_filter_clause(filter, key: nil)
       key ||= "#{filter[:parent_ast][:vname]}.#{filter[:key]}"
       key = key.join('.') if key.is_a?(Array)
 
@@ -244,13 +254,6 @@ module ArangoLookups
       end
     end
 
-    def traverse_down(ast, **kwargs, &blk)
-      traverse(ast, **kwargs) do |node|
-        yield(node)
-        node[:children].values
-      end
-    end
-
     def traverse(entry, mode: :bfs, &blk)
       return to_enum(:traverse, entry, mode: mode) unless block_given?
 
@@ -270,29 +273,22 @@ module ArangoLookups
     end
 
     def push(key)
-      old_context = @current_context
+      last_node = @current_node
+      return yield unless key.present?
 
-      if key.present?
-        new_context = old_context.dup
-
-        key = [*old_context[:path], key] unless key.is_a?(Array)
-        new_context[:path] = key
-
-        k = key.last.to_s
-        pk = /^(\w+)(?::(\w+))?(?:\[([\w|\*]+)\])?$/.match(k)
-
-        # TODO Move Scalars up to nearest root/graph/pointer parent
-        new_context[:ast] = ast_child!(pk[2] || 'scalar', { key: pk[1] }, key: key.last)
-
-        @current_context = new_context
-      end
+      pk = /^([\w\-_]+)(?::(\w+))?(?:\[([\w|\*]+)\])?$/.match(key.to_s)
+      @current_node = ast_child!('access', {
+        key: pk[1],
+        type_hint: pk[2] || 'scalar',
+        match: pk[3],
+      })
 
       yield
     ensure
-      @current_context = old_context
+      @current_node = last_node
     end
 
-    def ast_child!(type, base = {}, key: SecureRandom.hex(4), node: @current_context[:ast], &blk)
+    def ast_child!(type, base = {}, key: SecureRandom.hex(4), node: @current_node, &blk)
       node[:children][key] ||= {
         parent_ast: node,
         children: {},
@@ -307,55 +303,43 @@ module ArangoLookups
       send(:"lookup_#{lookup}", param)
     end
 
-    def ensure_var(vfor)
-      m = /^(\w+)(?::(\w+))?(?:\[([\w|\*]+)\])?$/.match(vfor)
-      raise ArgumentError, "Invalid var format: #{vfor}" unless m
-      k = "#{m[1]}_#{m[2] || 'scalar'}_#{SecureRandom.hex(4)}"
-
-      @current_context[:modifier] = m[3]
-
-      path = [*@current_context[:var_path], k]
-      @written_vars[path] ||= begin
-        getter = case m[2]
-        when 'graph'
-          <<~AQL
-            ()
-          AQL
-        when 'pointer'
-          <<~AQL
-            ()
-          AQL
-        when 'graph'
-          <<~AQL
-            ()
-          AQL
-        when "", "scalar", nil
-          "#{path[-2]}.#{m[1]}"
-        else
-          raise ArgumentError, "Unknown var type: #{m[2]}"
-        end
-        @clauses << "LET #{k} = #{getter}"
-        k
-      end
-    end
-
     def var_for(value)
       key = :"var_#{@injected_vars.size}"
 
       @injected_cache_map[value] ||= begin
         @injected_vars[key] = value
-        ":#{key}"
+        "@#{key}"
       end
     end
 
-    def ensure_join
-      trail = table_trail
-      trail.shift # Remove the start table
-      joins = @joins
-      trail.each do |t|
-        joins[t.to_sym] ||= {}
-        joins = joins[t.to_sym]
+    def pretty_print(aql)
+      lines = aql.split("\n")
+      formatted = []
+      indent_level = 0
+      indent_keywords = %w[FOR LET]
+      dedent_keywords = %w[RETURN FILTER]
+
+      lines.each do |line|
+        stripped = line.strip
+        next if stripped.empty?
+
+        # Check if this line should dedent first
+        if dedent_keywords.any? { |kw| stripped.start_with?(kw) } && indent_level > 0
+          indent_level -= 1
+        end
+
+        # Add the line with proper indentation
+        formatted << ("  " * indent_level) + stripped
+
+        # Check if this line should increase indent for next line
+        if indent_keywords.any? { |kw| stripped.start_with?(kw) }
+          indent_level += 1
+        elsif stripped.start_with?("FILTER") && stripped.include?("(")
+          indent_level += 1 if !stripped.include?(")")
+        end
       end
+
+      formatted.join("\n")
     end
   end
 end
