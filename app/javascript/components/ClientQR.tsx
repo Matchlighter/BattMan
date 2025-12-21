@@ -13,7 +13,7 @@ export const QR = ({ ...rest }: React.ComponentProps<typeof QRCode>) => {
 
 export const ClientActionQR = ({ action, ...rest }: { action: string } & Omit<React.ComponentProps<typeof QRCode>, "value">) => {
     const store = useContext(AppStore.Context);
-    return <QR value={`BATTMAN:CLIENT:${store.client_uid}:${action}`}
+    return <QR value={`BATTMAN:CLIENT:${store.client_conn_uid}:${action}`}
         {...rest}
     />
 }
@@ -26,7 +26,7 @@ export const ClientCallbackQR = ({ callback, ...rest }: { callback: (scanner: an
         const { token, unregister } = store.client_codes_store.registerClientCode(callback);
         setCodeData(token);
         return unregister;
-    }, [callback, store.client_uid]);
+    }, [callback, store.client_conn_uid]);
 
     if (!codeData) return null;
 

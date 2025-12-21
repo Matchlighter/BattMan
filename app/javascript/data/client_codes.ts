@@ -1,13 +1,5 @@
+import { generateToken } from "@/util";
 import { action } from "mobx";
-
-function generateToken(length: number = 8): string {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let token = "";
-    for (let i = 0; i < length; i++) {
-        token += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return token;
-}
 
 export class ClientCodesStore {
     private registered_handlers: Record<string, (scanner: any) => void> = {};

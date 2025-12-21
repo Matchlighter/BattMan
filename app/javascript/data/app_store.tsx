@@ -6,6 +6,7 @@ import React from "react";
 import { CABLE, Message } from "@/cable";
 import { ScanHookStore } from "./scan_hooking";
 import { ClientCodesStore } from "./client_codes";
+import { CHARSET, generateToken } from "@/util";
 
 const HID_CONFIG = {
     min_length: 4,
@@ -42,7 +43,7 @@ export class AppStore {
 
         this.uplink_channel = CABLE.subscriptions.create({ channel: "ClientChannel" }, {
             assign_uid: (data: Message<{ uid: string }>) => {
-                this.client_uid = data.uid;
+                this.client_conn_uid = data.uid;
             },
             client_scanned: (data: Message<{ scanner_id: string; payload: string }>) => {
                 console.log(`Scanned from scanner ${data.scanner_id}: ${data.payload}`);
@@ -63,9 +64,27 @@ export class AppStore {
                 })
             }
         });
+
     }
 
-    client_uid: string;
+    client_conn_uid: string;
+
+    get client_uid() {
+        let uid = window.localStorage.getItem("battman_client_uid");
+        if (!uid) {
+            uid = generateToken(8, CHARSET.HEXADECIMAL);
+            window.localStorage.setItem("battman_client_uid", uid);
+        }
+        return uid;
+    }
+
+    get emulatedScannerID() {
+        return `WEB:${this.client_uid}`;
+    }
+
+    get isInEmulationMode() {
+        return this.paired_scanner_id == this.emulatedScannerID;
+    }
 
     @observable accessor paired_scanner_id: string;
     @observable accessor follow_scans = false;
@@ -132,6 +151,10 @@ export class AppStore {
         this._scanner_channel = null;
     }
 
+    sendEmulatedScan(code: string) {
+        this._scanner_channel?.perform("emulate_scan", { payload: code });
+    }
+
     private listenForHIDScans() {
         let fast_keys = [];
         let last_key_time_ms = 0;
@@ -158,6 +181,22 @@ export class AppStore {
                     console.log(`HID code received: ${scanned_code}`);
                     if (scan_commit_timer) clearTimeout(scan_commit_timer);
                     fast_keys = [];
+                    if (this.isInEmulationMode) {
+                        this.sendEmulatedScan(scanned_code);
+                    } else {
+                        this.ant.modal.confirm({
+                            title: "HID Scanner Detected",
+                            content: <>
+                                <p>A HID scanner input was detected. Connect to this scanner?</p>
+                                <p><strong>Scanned Code:</strong> {scanned_code}</p>
+                            </>,
+                            onOk: action(() => {
+                                this.linkScanner(this.emulatedScannerID);
+                                console.log(`Linked HID scanner as ${this.emulatedScannerID}`);
+                                this.sendEmulatedScan(scanned_code);
+                            }),
+                        });
+                    }
                 }
             }
         }

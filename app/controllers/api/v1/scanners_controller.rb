@@ -2,6 +2,7 @@ module Api::V1
   class ScannersController < Api::ApiController
     def index
       @scanners = Scanner.all
+      @scanners = @scanners.where.not("id LIKE ?", "WEB:%") unless params[:include_web] == "true"
     end
 
     def show

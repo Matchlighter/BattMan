@@ -11,15 +11,15 @@ class Scanner < ApplicationRecord
 
       # Tell the client Channel to subscribe to the scanner
       if (m = /^CLIENT:(\w+):(.*)$/.match(meta))
-        client_uid = m[1]
-        ClientChannel.broadcast_to(client_uid, {
+        clieclient_conn_uidnt_uid = m[1]
+        ClientChannel.broadcast_to(client_conn_uid, {
           type: "client_scanned",
           scanner_id: scanner.id,
           payload: m[2],
         })
       end
-    elsif scanner && (client_uid = scanner.scan_hook).present?
-      ClientChannel.broadcast_to(client_uid, {
+    elsif scanner && (client_conn_uid = scanner.scan_hook).present?
+      ClientChannel.broadcast_to(client_conn_uid, {
         type: "scan",
         scanner_id: scanner.id,
         hooked: true,
