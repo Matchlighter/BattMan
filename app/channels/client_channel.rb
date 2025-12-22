@@ -1,4 +1,6 @@
 class ClientChannel < ApplicationCable::Channel
+  periodically :touch_connected_state, every: 90.seconds
+
   def subscribed
     @uid = params[:uid] || SecureRandom.hex(8)
     @has_scan_hook = false
@@ -8,6 +10,8 @@ class ClientChannel < ApplicationCable::Channel
     end
 
     transmit({ type: "assign_uid", uid: @uid })
+
+    touch_connected_state
   end
 
   def take_scan_hook(pl)
@@ -24,5 +28,12 @@ class ClientChannel < ApplicationCable::Channel
 
   def unsubscribed
     release_scan_hook
+    Rails.cache.delete("client:#{@uid}:connected")
+  end
+
+  protected
+
+  def touch_connected_state
+    Rails.cache.write("client:#{@uid}:connected", true, expires_in: 2.minutes)
   end
 end

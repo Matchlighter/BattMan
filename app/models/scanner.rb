@@ -1,17 +1,25 @@
 class Scanner < ApplicationRecord
   class ScanError < StandardError; end
 
-  BATTMAN_REGEX = /^(?<url>.*\/scan\/)BATTMAN:(?<code>.*)$/
+  BATTMAN_REGEX = /^BATTMAN:(?<code>.*)$/
 
   def self.process_scan_event!(scanner_id, payload)
     scanner = Scanner.find_or_create_by(id: scanner_id)
+
+    url = URI.parse(payload) rescue nil
+    if url && url.path&.start_with?("/mobile_scanner/")
+      query_hash = Rack::Utils.parse_query(url.query)
+      if query_hash["link"]&.start_with?("BATTMAN:")
+        payload = query_hash["link"]
+      end
+    end
 
     if (m = BATTMAN_REGEX.match(payload))
       meta = m["code"]
 
       # Tell the client Channel to subscribe to the scanner
       if (m = /^CLIENT:(\w+):(.*)$/.match(meta))
-        clieclient_conn_uidnt_uid = m[1]
+        client_conn_uid = m[1]
         ClientChannel.broadcast_to(client_conn_uid, {
           type: "client_scanned",
           scanner_id: scanner.id,

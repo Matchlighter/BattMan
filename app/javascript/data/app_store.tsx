@@ -4,9 +4,9 @@ import { action, computed, observable, reaction, runInAction } from "mobx";
 import React from "react";
 
 import { CABLE, Message } from "@/cable";
-import { ScanHookStore } from "./scan_hooking";
 import { ClientCodesStore } from "./client_codes";
-import { CHARSET, generateToken } from "@/util";
+import { getClientUid } from "./common";
+import { ScanHookStore } from "./scan_hooking";
 
 const HID_CONFIG = {
     min_length: 4,
@@ -45,11 +45,20 @@ export class AppStore {
             assign_uid: (data: Message<{ uid: string }>) => {
                 this.client_conn_uid = data.uid;
             },
-            client_scanned: (data: Message<{ scanner_id: string; payload: string }>) => {
+            client_scanned: action((data: Message<{ scanner_id: string; payload: string }>) => {
                 console.log(`Scanned from scanner ${data.scanner_id}: ${data.payload}`);
+                this.paired_scanner_state = "active";
                 this.client_codes_store.handleCodeScanned(data.payload, data.scanner_id);
-            },
+            }),
+            // Primarily for when using a phone as a scanner, just to get some idea if the connection is alive
+            scanner_disconnected: action((data: Message<{ scanner_id: string }>) => {
+                if (this.paired_scanner_id == data.scanner_id) {
+                    this.paired_scanner_state = "disconnected";
+                    // this.unlinkScanner();
+                }
+            }),
             scan: (data: Message<{ payload: string, hooked: boolean }>) => {
+                this.paired_scanner_state = "active";
                 if (data.hooked) {
                     this.scan_hook_store.handleHookedScan(data.payload);
                 }
@@ -70,12 +79,7 @@ export class AppStore {
     client_conn_uid: string;
 
     get client_uid() {
-        let uid = window.localStorage.getItem("battman_client_uid");
-        if (!uid) {
-            uid = generateToken(8, CHARSET.HEXADECIMAL);
-            window.localStorage.setItem("battman_client_uid", uid);
-        }
-        return uid;
+        return getClientUid();
     }
 
     get emulatedScannerID() {
@@ -86,6 +90,7 @@ export class AppStore {
         return this.paired_scanner_id == this.emulatedScannerID;
     }
 
+    @observable accessor paired_scanner_state = "connected";
     @observable accessor paired_scanner_id: string;
     @observable accessor follow_scans = false;
 
